@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>क्यूबिकल ७८ — मेरी सीट से पूरा फ़्लोर</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#241F17; --soft:#5F5749; --glass:rgba(248,246,240,.9); --edge:rgba(40,32,18,.16);
+  --blue:#2C4E9B; --orange:#D9541F; --mustard:#D9A518; --bg:#DCD7CA;
+  --pop:#FFFFFF; --shadow:0 14px 40px rgba(40,32,14,.22);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#E7EEEA; --soft:#93A7A4; --glass:rgba(16,26,31,.86); --edge:rgba(160,200,200,.18);
+    --blue:#5D89D6; --orange:#E67A3C; --mustard:#D9AD36; --bg:#0D1519;
+    --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E7EEEA; --soft:#93A7A4; --glass:rgba(16,26,31,.86); --edge:rgba(160,200,200,.18);
+  --blue:#5D89D6; --orange:#E67A3C; --mustard:#D9AD36; --bg:#0D1519;
+  --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%; margin:0; padding:0; overflow:hidden; overscroll-behavior:none}
+body{background:var(--bg); color:var(--ink); font-family:'Hind',system-ui,sans-serif; font-size:16px;
+  line-height:1.55; -webkit-font-smoothing:antialiased}
+h1,h2{font-family:'Rozha One',serif; font-weight:400; line-height:1.14; margin:0}
+p{margin:0 0 .6em}
+button{font-family:'Hind',sans-serif}
+:focus-visible{outline:3px solid var(--orange); outline-offset:2px}
+
+/* ---------- stage ---------- */
+#stage{position:fixed; inset:0}
+#pano{position:absolute; inset:0; overflow-x:auto; overflow-y:hidden; cursor:grab;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch; touch-action:pan-x}
+#pano::-webkit-scrollbar{display:none}
+#pano.grabbing{cursor:grabbing}
+#pano svg{display:block; height:100%; width:auto; max-width:none}
+#vig{position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(130% 92% at 50% 44%, transparent 42%, rgba(20,14,4,.36) 100%)}
+#prog{position:absolute; top:0; left:0; right:0; height:3px; z-index:20; background:var(--edge)}
+#prog i{display:block; height:100%; width:0; background:var(--orange); transition:width 30s linear}
+#prog b{position:absolute; top:0; left:33.33%; width:2px; height:3px; background:var(--mustard)}
+.shift{cursor:default; background:var(--pop)}
+.shift.tea{background:var(--mustard); border-color:var(--mustard); color:#241A05; font-weight:600}
+#grain{position:absolute; inset:0; pointer-events:none; opacity:.06; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ---------- chrome ---------- */
+.bar{position:absolute; left:0; right:0; z-index:10; padding:.5rem max(12px, env(safe-area-inset-left));
+  display:flex; align-items:center; gap:.5rem}
+.bar.top{top:0; background:linear-gradient(var(--glass), transparent); backdrop-filter:blur(3px)}
+.brand{font-family:'Rozha One',serif; font-size:1.35rem; white-space:nowrap; margin-right:.2rem}
+.spacer{flex:1}
+#clock{font-family:'Rozha One',serif; font-size:1.2rem; white-space:nowrap}
+.pill{background:var(--glass); border:1px solid var(--edge); color:var(--ink); border-radius:999px;
+  padding:.24rem .85rem; cursor:pointer; font-size:.88rem; white-space:nowrap; backdrop-filter:blur(6px)}
+.pill:hover{border-color:var(--orange)}
+.pill[aria-pressed="true"]{background:var(--blue); border-color:var(--blue); color:#fff}
+.jump{position:absolute; top:3.1rem; left:0; right:0; z-index:10; display:flex; gap:.35rem;
+  overflow-x:auto; padding:0 max(12px, env(safe-area-inset-left)); scrollbar-width:none}
+.jump::-webkit-scrollbar{display:none}
+.jump .pill{flex:none}
+
+.hint{position:absolute; left:50%; bottom:8.5rem; transform:translateX(-50%); z-index:9;
+  background:rgba(22,16,6,.7); color:#F6F2E8; padding:.28rem 1rem; border-radius:999px;
+  font-size:.88rem; pointer-events:none; transition:opacity .5s ease}
+
+/* ---------- dock ---------- */
+.dock{position:absolute; left:0; right:0; bottom:0; z-index:12; background:var(--glass);
+  border-top:1px solid var(--edge); backdrop-filter:blur(14px);
+  padding:.55rem max(12px, env(safe-area-inset-left)) calc(.55rem + env(safe-area-inset-bottom));
+  display:flex; align-items:center; gap:.6rem; flex-wrap:wrap}
+.key{background:var(--pop); border:1px solid var(--edge); border-radius:7px; padding:.34rem .8rem;
+  cursor:pointer; color:var(--ink); font-weight:600; font-size:.9rem}
+.key:hover{border-color:var(--orange)}
+.key.big{background:var(--orange); border-color:var(--orange); color:#FFF6F0}
+.reel{width:30px; height:30px; flex:none}
+.playing .spin{animation:rot 2.4s linear infinite; transform-origin:50% 50%}
+@keyframes rot{to{transform:rotate(360deg)}}
+.track{min-width:9rem; flex:1 1 9rem; overflow:hidden}
+.track .t{font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.track .s{font-size:.78rem; color:var(--soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.vol{display:flex; align-items:center; gap:.4rem; font-size:.82rem; color:var(--soft)}
+.vol input{width:80px}
+label.file{background:var(--blue); color:#fff; border-radius:7px; padding:.34rem .85rem;
+  cursor:pointer; font-size:.9rem; font-weight:600}
+label.file input{position:absolute; width:1px; height:1px; opacity:0}
+input[type=range]{-webkit-appearance:none; appearance:none; height:4px; border-radius:99px;
+  background:var(--edge)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:15px; height:15px; border-radius:50%;
+  background:var(--orange); cursor:pointer}
+input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; background:var(--orange); border:0; cursor:pointer}
+
+/* ---------- panels ---------- */
+.panel{position:absolute; z-index:11; left:max(12px, env(safe-area-inset-left)); bottom:4.2rem;
+  width:min(440px, calc(100vw - 24px)); max-height:min(56vh, 460px); overflow-y:auto;
+  background:var(--glass); backdrop-filter:blur(16px); border:1px solid var(--edge);
+  border-radius:14px; box-shadow:var(--shadow); padding:1rem 1.05rem 1.1rem; display:none}
+.panel.on{display:block}
+.panel h2{font-size:1.5rem; margin-bottom:.3rem}
+.panel .lede{color:var(--soft); font-size:.92rem; margin-bottom:.8rem}
+.panel .x{position:absolute; top:.6rem; right:.7rem}
+.steps{margin:0 0 .9rem; padding-left:1.1rem}
+.steps li{margin-bottom:.3rem}
+.small{font-size:.86rem; color:var(--soft)}
+
+.queue{list-style:none; padding:0; margin:.2rem 0 0}
+.queue li{display:flex; gap:.6rem; padding:.36rem .5rem; border-radius:6px; cursor:pointer; font-size:.94rem}
+.queue li:hover{background:var(--pop)}
+.queue li[aria-current="true"]{background:var(--pop); color:var(--orange); font-weight:600}
+.queue .n{color:var(--soft)}
+
+.songs{list-style:none; padding:0; margin:0}
+.songs li{display:flex; align-items:baseline; gap:.55rem; padding:.4rem 0; border-bottom:1px solid var(--edge); font-size:.94rem}
+.songs .flm{color:var(--soft); font-size:.85rem}
+.songs a{margin-left:auto; color:var(--orange); text-decoration:none; font-weight:600; font-size:.85rem; white-space:nowrap}
+
+.chan{display:grid; grid-template-columns:1fr auto; gap:.1rem .5rem; padding:.3rem 0; border-bottom:1px solid var(--edge)}
+.chan .nm{font-weight:600; font-size:.92rem}
+.chan .pc{font-size:.82rem; color:var(--soft)}
+.chan input{grid-column:1/-1; width:100%}
+.presets{display:flex; gap:.35rem; flex-wrap:wrap; margin-top:.8rem}
+
+.notelist{display:grid; gap:.7rem}
+.note{background:#F2D24B; color:#231A05; padding:.7rem .85rem; border-radius:3px; font-size:.94rem; line-height:1.4}
+.note:nth-child(3n+2){background:#F3DE8C}
+.note:nth-child(3n+3){background:#EFC8A0}
+
+.ytbox{position:absolute; right:max(12px, env(safe-area-inset-right)); bottom:4.6rem; z-index:11;
+  width:258px; background:var(--glass); backdrop-filter:blur(14px); border:1px solid var(--edge);
+  border-radius:12px; box-shadow:var(--shadow); padding:8px 8px 4px; display:none}
+.ytbox.on{display:block}
+.ytscreen{border-radius:6px; overflow:hidden; background:#000; line-height:0}
+.ytfoot{font-size:.72rem; color:var(--soft); text-align:center; padding:3px 0 1px}
+@media (max-width:640px){ .ytbox{width:212px; bottom:8.4rem} }
+
+/* ---------- gate ---------- */
+#gate{position:fixed; inset:0; z-index:100; display:grid; place-items:center; background:var(--bg);
+  padding:24px; text-align:center}
+#gate .plate{display:inline-flex; align-items:center; gap:.5rem; background:var(--blue); color:#fff;
+  padding:.28rem .45rem .28rem .95rem; border-radius:3px; font-weight:600; font-size:.92rem; margin-bottom:1.3rem}
+#gate .plate b{background:#fff; color:var(--blue); font-family:'Rozha One',serif; font-weight:400;
+  padding:.02rem .5rem; border-radius:2px; font-size:1.1rem}
+#gate h1{font-size:clamp(2.3rem,10vw,4.4rem); margin-bottom:.2em}
+#gate p{color:var(--soft); max-width:29rem; margin:0 auto 1.8rem}
+.bigbtn{font-family:'Rozha One',serif; font-size:1.5rem; padding:.4em 1.5em .5em; background:var(--orange);
+  color:#FFF6F0; border:0; border-radius:999px; cursor:pointer; box-shadow:var(--shadow)}
+
+@media (max-width:640px){
+  .brand{font-size:1.1rem}
+  #clock{font-size:1rem}
+  .vol{display:none}
+  .track{flex-basis:100%; order:-1}
+  .hint{bottom:10.5rem}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important; animation-iteration-count:1 !important}
+}
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="pano">
+    <svg id="floor" viewBox="0 0 3400 900" xmlns="http://www.w3.org/2000/svg" role="img"
+      aria-label="क्यूबिकल ७८ से दिखता पूरा ऑपरेशंस फ़्लोर — कतारों में डेस्क, पीली पार्टीशन, नारंगी दीवार और रंगीन पट्टियों वाली दीवार">
+      <g id="scene"></g>
+    </svg>
+  </div>
+  <div id="vig"></div>
+  <div id="prog"><i id="progfill"></i><b id="progtea"></b></div>
+  <div id="grain"></div>
+</div>
+
+<div class="bar top">
+  <span class="brand">क्यूबिकल ७८</span>
+  <span class="spacer"></span>
+  <span id="clock">००:००</span>
+  <span class="pill shift" id="shift">—</span>
+  <button class="pill" id="theme">रात कर दो</button>
+  <button class="pill" id="mute" aria-pressed="false">आवाज़ बंद</button>
+</div>
+
+<div class="jump" id="jump">
+  <button class="pill" data-x="0.08">मेरी डेस्क</button>
+  <button class="pill" data-x="0.28">कुर्सियों की क़तार</button>
+  <button class="pill" data-x="0.49">दीवार पे लिखा है</button>
+  <button class="pill" data-x="0.60">टी.वी. वाला कोना</button>
+  <button class="pill" data-x="0.80">बग़ल वाला ७७</button>
+  <button class="pill" data-x="0.95">रंगीन दीवार</button>
+</div>
+
+<div class="hint" id="hint">खींच के पूरा फ़्लोर देखो</div>
+
+<div class="panel" id="p-songs">
+  <button class="pill x" data-close>बंद</button>
+  <h2>प्लेलिस्ट लग चुकी है</h2>
+  <p class="lede">तुम्हारी “Motivational Songs” प्लेलिस्ट इस पेज में जुड़ी हुई है — ३५ गाने। कुछ डाउनलोड नहीं करना।</p>
+  <ol class="steps">
+    <li>इस फ़ाइल का नाम पहले से <b>index.html</b> है। इसे एक फ़ोल्डर में रख दो।</li>
+    <li>फ़ोल्डर को <b>app.netlify.com/drop</b> पर छोड़ दो।</li>
+    <li>जो लिंक मिले वो फ़्लोर पर भेज दो। बस।</li>
+  </ol>
+  <p class="small">प्लेलिस्ट बदलनी हो तो फ़ाइल Notepad में खोलो, ऊपर <b>YT_PLAYLIST</b> ढूँढो और नया ID डाल दो।</p>
+  <p class="small"><b>ध्यान रहे:</b> ये फ़ाइल इंटरनेट पर होनी ज़रूरी है। सीधे कंप्यूटर से खोलोगे तो यूट्यूब नहीं चलेगा।</p>
+  <p class="small">कुछ फ़िल्मी गाने कंपनी ने एम्बेड करने से रोके होते हैं — वो अपने आप छूटकर अगला चल जाएगा। बीच में विज्ञापन भी आ सकते हैं।</p>
+  <h2 style="font-size:1.25rem; margin-top:1rem">क़तार</h2>
+  <ul class="queue" id="queue"><li style="cursor:default; color:var(--soft)">अभी कुछ नहीं लगा है।</li></ul>
+</div>
+
+<div class="panel" id="p-list">
+  <button class="pill x" data-close>बंद</button>
+  <h2>जोश वाली लिस्ट</h2>
+  <p class="lede">याद न आ रहा हो कि क्या लगाना है तो यहाँ से शुरू करो।</p>
+  <ul class="songs" id="songs"></ul>
+</div>
+
+<div class="panel" id="p-mix">
+  <button class="pill x" data-close>बंद</button>
+  <h2>फ़्लोर की आवाज़</h2>
+  <p class="lede">गाने के पीछे वाला शोर। सब कुछ ब्राउज़र में ही बनता है।</p>
+  <div id="mix"></div>
+  <div class="presets">
+    <button class="pill" data-preset="day">शुरुआत · २ बजे</button>
+    <button class="pill" data-preset="night">रात · ११ तक</button>
+    <button class="pill" data-preset="tea">चाय · ५ बजे</button>
+    <button class="pill" data-preset="quiet">सन्नाटा</button>
+  </div>
+</div>
+
+<div class="panel" id="p-notes">
+  <button class="pill x" data-close>बंद</button>
+  <h2>यादें</h2>
+  <p class="lede">पार्टीशन पर चिपकी पर्चियाँ।</p>
+  <div class="notelist" id="notes"></div>
+</div>
+
+<div class="dock" id="dock">
+  <svg class="reel" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#241D14"/><g class="spin"><circle cx="50" cy="50" r="26" fill="#0f0c08"/><circle cx="50" cy="50" r="12" fill="#C9BA96"/><g stroke="#C9BA96" stroke-width="8" stroke-linecap="round"><line x1="50" y1="24" x2="50" y2="36"/><line x1="50" y1="64" x2="50" y2="76"/><line x1="24" y1="50" x2="36" y2="50"/><line x1="64" y1="50" x2="76" y2="50"/></g></g></svg>
+  <div class="track"><div class="t" id="nowtitle">कोई गाना नहीं लगा है</div><div class="s" id="nowsub">मोटिवेशनल गाने · ३५</div></div>
+  <button class="key" id="prev">पिछला</button>
+  <button class="key big" id="play">चलाओ</button>
+  <button class="key" id="next">अगला</button>
+  <div class="vol"><span>आवाज़</span><input type="range" id="musicvol" min="0" max="100" value="85" aria-label="गाने की आवाज़"></div>
+  <label class="file">गाने चुनो<input type="file" id="files" accept="audio/*" multiple></label>
+  <span class="spacer"></span>
+  <button class="pill" data-panel="p-songs">कैसे लगाएँ</button>
+  <button class="pill" data-panel="p-list">जोश वाली लिस्ट</button>
+  <button class="pill" data-panel="p-mix">फ़्लोर की आवाज़</button>
+  <button class="pill" data-panel="p-notes">यादें</button>
+</div>
+
+<div class="ytbox" id="ytbox"><div class="ytscreen"><div id="ytplayer"></div></div><div class="ytfoot" id="ytfoot">यूट्यूब</div></div>
+
+<audio id="audio"></audio>
+
+<div id="gate">
+  <div>
+    <div class="plate">फ़्लोर २ · क्यूबिकल <b>७८</b></div>
+    <h1>मेरी सीट से पूरा फ़्लोर</h1>
+    <p>दोपहर २ बजे लॉगिन, ५ बजे चाय, रात ११ बजे लॉग आउट। बीच के नौ घंटे यही दिखते हैं। साथ में तुम्हारी अपनी मोटिवेशनल प्लेलिस्ट।</p>
+    <button class="bigbtn" id="start">शिफ़्ट शुरू करो</button>
+  </div>
+</div>
+
+<script>
+/* ===== Arista floor panorama v2 — lit, shaded, depth-of-field ===== */
+var SCENE_W = 3400, SCENE_H = 900;
+
+function buildScene(P){
+  var seed = 20260918;
+  function rnd(){ seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+  function pick(a){ return a[Math.floor(rnd()*a.length)]; }
+  function n(v){ return Math.round(v*10)/10; }
+  var o = [];
+  function R(x,y,w,h,f,rx,op){ o.push('<rect x="'+n(x)+'" y="'+n(y)+'" width="'+n(w)+'" height="'+n(h)+'" fill="'+f+'"'+(rx?' rx="'+n(rx)+'"':'')+(op!=null?' opacity="'+op+'"':'')+'/>'); }
+  function C(cx,cy,r,f,op){ o.push('<circle cx="'+n(cx)+'" cy="'+n(cy)+'" r="'+n(r)+'" fill="'+f+'"'+(op!=null?' opacity="'+op+'"':'')+'/>'); }
+  function E(cx,cy,rx,ry,f,op){ o.push('<ellipse cx="'+n(cx)+'" cy="'+n(cy)+'" rx="'+n(rx)+'" ry="'+n(ry)+'" fill="'+f+'"'+(op!=null?' opacity="'+op+'"':'')+'/>'); }
+  function Pth(d,f,s,w,op){ o.push('<path d="'+d+'" fill="'+(f||'none')+'"'+(s?' stroke="'+s+'" stroke-width="'+n(w||2)+'" stroke-linecap="round" stroke-linejoin="round"':'')+(op!=null?' opacity="'+op+'"':'')+'/>'); }
+
+  /* ================= defs ================= */
+  function lg(id, x1,y1,x2,y2, stops){
+    var s = '<linearGradient id="'+id+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'">';
+    for (var i=0;i<stops.length;i++) s += '<stop offset="'+stops[i][0]+'" stop-color="'+stops[i][1]+'"'+(stops[i][2]!=null?' stop-opacity="'+stops[i][2]+'"':'')+'/>';
+    return s + '</linearGradient>';
+  }
+  o.push('<defs>' +
+    lg('gCeil',0,0,0,1,[[0,P.ceilHi],[1,P.ceil]]) +
+    lg('gWall',0,0,0,1,[[0,P.wallHi],[.55,P.wall],[1,P.wallLo]]) +
+    lg('gFloor',0,0,0,1,[[0,P.floorLo],[1,P.floor]]) +
+    lg('gDesk',0,0,0,1,[[0,P.deskHi],[1,P.desk]]) +
+    lg('gPart',0,0,0,1,[[0,P.cubHi],[.35,P.cubFace],[1,P.cubLo]]) +
+    lg('gYellow',0,0,0,1,[[0,P.yellowHi],[1,P.yellow]]) +
+    lg('gScreen',0,0,0,1,[[0,P.screenHi],[1,P.screen]]) +
+    lg('gGlass',0,0,0,1,[[0,P.glassTop],[1,P.glass]]) +
+    lg('gMon',0,0,1,0,[[0,P.monitorHi],[.5,P.monitor],[1,P.monitorLo]]) +
+    lg('gChair',0,0,1,0,[[0,P.chairHi],[.45,P.chair],[1,P.chairLo]]) +
+    lg('gGold',0,0,1,0,[[0,P.goldHi],[.45,P.gold],[1,P.goldDark]]) +
+    lg('gSteel',0,0,1,0,[[0,P.steelLo],[.3,P.steelHi],[1,P.steelLo]]) +
+    lg('gLight',0,0,0,1,[[0,P.light],[1,P.lightWarm]]) +
+    lg('gPool',0,0,0,1,[[0,P.light,.3],[1,P.light,0]]) +
+    lg('gSheen',0,0,0,1,[[0,'#ffffff',.22],[1,'#ffffff',0]]) +
+    '<filter id="lamp" x="-70%" y="-400%" width="240%" height="900%"><feGaussianBlur stdDeviation="11"/></filter>' +
+    '<filter id="dof3" x="-3%" y="-6%" width="106%" height="112%"><feGaussianBlur stdDeviation="2.6"/></filter>' +
+    '<filter id="dof2" x="-3%" y="-6%" width="106%" height="112%"><feGaussianBlur stdDeviation="1.5"/></filter>' +
+    '<filter id="dof1" x="-3%" y="-6%" width="106%" height="112%"><feGaussianBlur stdDeviation="0.7"/></filter>' +
+    '<filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6"/></filter>' +
+  '</defs>');
+
+  /* ================= ceiling ================= */
+  o.push('<g filter="url(#dof2)">');
+  R(0,0,SCENE_W,268,'url(#gCeil)');
+  R(0,142,SCENE_W,26,P.ceilBand); R(0,142,SCENE_W,3,P.ceilHi);
+  R(0,210,SCENE_W,15,P.ceilBand); R(0,210,SCENE_W,2,P.ceilHi);
+  var tiers = [[20,132,32,272],[96,100,23,216],[154,76,16,172],[198,57,12,140],[230,44,9,116]];
+  for (var t=0;t<tiers.length;t++){
+    var ly=tiers[t][0], lw=tiers[t][1], lh=tiers[t][2], lsp=tiers[t][3];
+    for (var lx=-50; lx<SCENE_W+90; lx+=lsp){
+      if (rnd() > (t===2 ? .13 : .04)){
+        o.push('<g filter="url(#lamp)" opacity="'+P.lampGlow+'"><rect x="'+n(lx-9)+'" y="'+n(ly-7)+'" width="'+n(lw+18)+'" height="'+n(lh+14)+'" rx="8" fill="'+P.light+'"/></g>');
+        R(lx,ly,lw,lh,'url(#gLight)',3);
+      } else R(lx,ly,lw,lh,P.lightOff,3);
+      R(lx,ly+lh-1.5,lw,1.5,P.ceilBand,0,.5);
+    }
+  }
+  o.push('</g>');
+
+  /* ================= back wall ================= */
+  o.push('<g filter="url(#dof3)">');
+  R(0,262,SCENE_W,192,'url(#gWall)');
+  R(0,262,SCENE_W,4,P.ceilBand);
+
+  for (var gx=40; gx<1020; gx+=244){
+    R(gx,286,222,150,P.frame,2);
+    R(gx+4,290,214,142,'url(#gGlass)');
+    R(gx+4,290,214,30,P.glassTop,0,.85);
+    R(gx+108,290,3,142,P.frame,0,.8);
+    R(gx+4,290,214,4,P.frameHi,0,.6);
+    if (rnd()>.4) C(gx+60+rnd()*90, 372, 17, P.glassFig, .3);
+  }
+  Pth('M120 300 q24 -18 48 0 q24 18 48 0 l0 20 q-24 18 -48 0 q-24 -18 -48 0 z', P.accentRed,null,null,.9);
+  R(120,326,96,7,P.accentRed,1,.85); R(120,340,72,7,P.accentRed,1,.7);
+
+  R(1090,282,162,172,P.doorFrame,2);
+  R(1098,290,146,164,P.door);
+  R(1098,290,10,164,P.doorHi,0,.5);
+
+  R(1530,286,248,152,P.orange,2);
+  R(1530,286,248,52,'url(#gSheen)',2);
+  var mot = ['THE PLACE','YOU BELONG TO','HAS A LOT','TO DO'];
+  for (var m=0;m<mot.length;m++)
+    o.push('<text x="1654" y="'+(330+m*27)+'" text-anchor="middle" font-family="Hind, sans-serif" font-size="21" font-weight="600" letter-spacing="1" fill="'+P.orangeInk+'">'+mot[m]+'</text>');
+
+  R(1866,292,204,118,P.tvFrame,5);
+  R(1874,299,188,104,P.tv);
+  R(1874,299,188,36,'url(#gSheen)');
+  R(1956,410,22,13,P.tvFrame);
+
+  R(2178,294,160,110,P.boardFrame,2);
+  R(2184,300,148,98,P.board);
+  for (var nb=0;nb<6;nb++) R(2192+(nb%3)*48, 308+Math.floor(nb/3)*48, 40, 40, pick([P.note1,P.note2,P.note3]), 1, .95);
+
+  R(2430,372,20,58,P.accentRed,5); R(2435,362,10,12,P.steelLo);
+
+  var stripes = [P.st1,P.st2,P.st3,P.st4,P.st5,P.st6];
+  for (var sx=2620, si=0; sx<3392; sx+=28, si++) R(sx,262,28,192,stripes[si%stripes.length]);
+  R(2620,262,772,192,'url(#gSheen)');
+  R(2620,262,772,9,P.ceilBand);
+
+  R(2760,272,178,46,P.ac,5);
+  R(2760,272,178,14,P.acHi,5,.7);
+  for (var av=0;av<7;av++) R(2772+av*23,310,15,4,P.acVent,2);
+  o.push('<g transform="translate(3230 334)">'+
+    '<circle r="47" fill="'+P.fanBack+'"/><circle r="47" fill="none" stroke="'+P.steelLo+'" stroke-width="3"/>'+
+    '<g class="fanblades"><ellipse rx="34" ry="12" fill="'+P.fan+'"/><ellipse rx="34" ry="12" fill="'+P.fan+'" transform="rotate(60)"/><ellipse rx="34" ry="12" fill="'+P.fan+'" transform="rotate(120)"/></g>'+
+    '<circle r="9" fill="'+P.steelLo+'"/></g>');
+  o.push('</g>');
+
+  /* ================= floor ================= */
+  R(0,448,SCENE_W,452,'url(#gFloor)');
+  for (var px=60; px<SCENE_W; px+=250) E(px,720,150,54,'url(#gPool)');
+
+  /* ================= cubicle rows ================= */
+  var rows = [
+    { y:434, s:0.28, blur:'dof3', plates:false, lite:true  },
+    { y:484, s:0.40, blur:'dof2', plates:false, lite:true  },
+    { y:548, s:0.56, blur:'dof1', plates:false, lite:false },
+    { y:628, s:0.76, blur:null,   plates:true,  lite:false },
+    { y:722, s:1.00, blur:null,   plates:true,  lite:false }
+  ];
+  var aisles = [948, 2116, 3010];
+
+  function person(hx, baseY, s){
+    var hr = 16*s, hy = baseY - 34*s;
+    Pth('M'+n(hx-38*s)+' '+n(baseY+6*s)+' q'+n(2*s)+' '+n(-30*s)+' '+n(38*s)+' '+n(-30*s)+
+        ' q'+n(36*s)+' 0 '+n(38*s)+' '+n(30*s)+' z', pick(P.shirt));
+    R(hx-6*s, hy+hr*0.5, 12*s, 12*s, pick(P.skin));
+    E(hx, hy, hr*0.92, hr, pick(P.skin));
+    Pth('M'+n(hx-hr*0.95)+' '+n(hy-2*s)+' q'+n(hr*0.95)+' '+n(-hr*1.7)+' '+n(hr*1.9)+' 0'+
+        ' q'+n(-hr*0.6)+' '+n(-hr*0.5)+' '+n(-hr*1.9)+' 0 z', P.hair);
+  }
+
+  function monitor(mx, baseY, mw, mh, s, lit){
+    E(mx+mw/2, baseY+2*s, mw*0.55, 5*s, P.shadow, .3);
+    R(mx+mw/2-4*s, baseY-16*s, 8*s, 16*s, P.monitorLo, 2*s);
+    E(mx+mw/2, baseY-1*s, 21*s, 5*s, P.monitorLo);
+    R(mx, baseY-mh, mw, mh, 'url(#gMon)', 3.5*s);
+    if (lit){
+      R(mx+3*s, baseY-mh+3*s, mw-6*s, mh-9*s, 'url(#gScreen)', 1.5*s);
+      o.push('<g filter="url(#glow)" opacity="'+P.screenGlow+'"><rect x="'+n(mx+3*s)+'" y="'+n(baseY-mh+3*s)+'" width="'+n(mw-6*s)+'" height="'+n(mh-9*s)+'" fill="'+P.screen+'"/></g>');
+      if (rnd()>.45) R(mx+3*s, baseY-mh+3*s, mw-6*s, 8*s, P.screenBar, 0, .8);
+      R(mx+3*s, baseY-mh+3*s, (mw-6*s)*0.45, mh-9*s, 'url(#gSheen)');
+    } else {
+      R(mx+mw*0.3, baseY-mh*0.68, mw*0.4, mh*0.34, P.monitorVent, 2.5*s);
+      R(mx, baseY-mh, mw, mh*0.3, 'url(#gSheen)', 3.5*s);
+    }
+  }
+
+  function chair(cx, topY, cw, s){
+    var h = 66*s;
+    E(cx+cw/2, topY+h+14*s, cw*0.5, 7*s, P.shadow, .22);
+    Pth('M'+n(cx+cw*0.08)+' '+n(topY+h)+
+        ' q'+n(-cw*0.06)+' '+n(-h*0.9)+' '+n(cw*0.16)+' '+n(-h)+
+        ' l'+n(cw*0.52)+' 0'+
+        ' q'+n(cw*0.22)+' '+n(h*0.1)+' '+n(cw*0.16)+' '+n(h)+' z', 'url(#gChair)');
+    R(cx+cw*0.2, topY+h*0.18, cw*0.6, h*0.42, P.chairMesh, 8*s);
+    R(cx+cw*0.26, topY-h*0.2, cw*0.48, h*0.26, 'url(#gChair)', 7*s);
+  }
+
+  for (var i=0;i<rows.length;i++){
+    var y = rows[i].y, s = rows[i].s, lite = rows[i].lite;
+    var sp = 236*s, deskH = 13*s, partH = 86*s, partY = y + deskH;
+    if (rows[i].blur) o.push('<g filter="url(#'+rows[i].blur+')">');
+
+    for (var x = -sp; x < SCENE_W + sp; x += sp){
+      var mid = x + sp/2, gap = false;
+      for (var a=0;a<aisles.length;a++) if (Math.abs(mid - aisles[a]) < 74*s) gap = true;
+      if (gap) continue;
+
+      var mw = 128*s, mh = 76*s, mx = x + (sp-mw)/2 + (rnd()-.5)*18*s, lit = rnd() > .46;
+
+      if (rnd() > (lite ? .68 : .5)) person(mx + mw/2 + (rnd()-.5)*46*s, y - mh - 2*s, s);
+      monitor(mx, y, mw, mh, s, lit);
+
+      R(x, y, sp, deskH, 'url(#gDesk)');
+      R(x, y+deskH-3.5*s, sp, 3.5*s, P.deskEdge);
+      R(x, y, sp, 2*s, P.deskHi, 0, .7);
+
+      if (!lite){
+        var q = rnd();
+        if (q > .72){ R(x+28*s, y-30*s, 13*s, 30*s, 'url(#gSteel)', 4*s); E(x+34.5*s, y, 8*s, 3*s, P.shadow, .25); }
+        else if (q > .6){ E(x+34*s, y-4*s, 10*s, 4*s, P.shadow, .22); R(x+26*s, y-20*s, 17*s, 18*s, P.mug, 3*s); }
+        else if (q > .48) R(x+24*s, y-19*s, 24*s, 19*s, pick([P.note1,P.note2,P.note3]), 1);
+      }
+
+      R(x, partY, sp-1.5, partH, 'url(#gPart)');
+      R(x, partY, sp-1.5, 10*s, P.cubRail);
+      R(x, partY, sp-1.5, 2.5*s, P.cubHi, 0, .8);
+      if (rnd() > .42) R(x+sp*0.12, partY+13*s, sp*0.6, partH-17*s, 'url(#gYellow)');
+      if (rnd() > .8) R(x+sp*0.2, partY+22*s, 25*s, 25*s, pick([P.note1,P.note2,P.note3]), 1);
+      if (rows[i].plates && rnd() > .45){
+        R(x+sp*0.58, partY+28*s, 112*s, 38*s, P.blue, 2.5*s);
+        R(x+sp*0.58, partY+28*s, 112*s, 13*s, 'url(#gSheen)', 2.5*s);
+        R(x+sp*0.58+82*s, partY+32*s, 24*s, 30*s, P.plate, 1);
+      }
+      R(x+sp-1.5, partY, 1.5, partH, P.cubSeam, 0, .7);
+
+      if (rnd() > .4){
+        var cw = 132*s, cx2 = x + (sp-cw)/2 + (rnd()-.5)*24*s;
+        chair(cx2, partY + 8*s, cw, s);
+        if (rnd() > .74) R(cx2+cw*0.2, partY+4*s, cw*0.58, 44*s, pick(P.bags), 11*s);
+      }
+    }
+    if (rows[i].blur) o.push('</g>');
+  }
+
+  /* ================= foreground: my own desk ================= */
+  R(0, 802, SCENE_W, 16, P.floorLo);
+  R(0, 814, SCENE_W, 86, 'url(#gDesk)');
+  R(0, 814, SCENE_W, 5, P.deskHi);
+  R(0, 819, SCENE_W, 4, P.deskEdge, 0, .5);
+
+  function plate(x, num){
+    R(x, 724, 164, 58, P.blue, 4);
+    R(x, 724, 164, 20, 'url(#gSheen)', 4);
+    R(x+118, 730, 40, 46, P.plate, 2);
+    o.push('<text x="'+(x+138)+'" y="765" text-anchor="middle" font-family="Rozha One, serif" font-size="29" fill="'+P.blueInk+'">'+num+'</text>');
+  }
+  plate(556, '७८');
+  plate(1672, '७७');
+
+  function plant(x, y, k){
+    E(x, y+32*k, 34*k, 9*k, P.shadow, .25);
+    Pth('M'+x+' '+y+' q'+n(-36*k)+' '+n(-32*k)+' '+n(-15*k)+' '+n(-66*k), null, P.plant, 7*k);
+    Pth('M'+x+' '+y+' q'+n(32*k)+' '+n(-26*k)+' '+n(17*k)+' '+n(-60*k), null, P.plant, 7*k);
+    Pth('M'+x+' '+y+' q'+n(4*k)+' '+n(-42*k)+' '+n(2*k)+' '+n(-72*k), null, P.plant2, 7*k);
+    Pth('M'+x+' '+y+' q'+n(-18*k)+' '+n(-34*k)+' '+n(-34*k)+' '+n(-40*k), null, P.plant2, 6*k);
+    R(x-21*k, y, 42*k, 36*k, P.pot, 5*k);
+    R(x-21*k, y, 42*k, 10*k, 'url(#gSheen)', 5*k);
+  }
+  plant(1356, 628, .8);
+  plant(1900, 548, .58);
+
+  o.push('<g transform="translate(1790 572)"><rect x="0" y="0" width="3" height="54" fill="'+P.steelLo+'"/>'+
+    '<rect x="3" y="2" width="42" height="9" fill="#FF9933"/><rect x="3" y="11" width="42" height="9" fill="#FFFFFF"/>'+
+    '<rect x="3" y="20" width="42" height="9" fill="#138808"/>'+
+    '<circle cx="24" cy="15.5" r="3.4" fill="none" stroke="#1B3A8C" stroke-width="1.5"/></g>');
+
+  E(130, 906, 150, 22, P.shadow, .3);
+  o.push('<g transform="translate(-30 688)">'+
+    '<path d="M0 94 q-8 -26 26 -30 l150 0 q34 4 26 30 l0 160 q0 30 -30 30 l-142 0 q-30 0 -30 -30 z" fill="'+P.chair+'"/>'+
+    '<rect x="26" y="0" width="158" height="192" rx="34" fill="'+P.bagTeal+'"/>'+
+    '<rect x="26" y="0" width="60" height="192" rx="34" fill="url(#gSheen)"/>'+
+    '<rect x="44" y="58" width="120" height="62" rx="16" fill="'+P.bagShade+'"/>'+
+    '<path d="M52 8 q52 -38 106 0" fill="none" stroke="'+P.bagTeal+'" stroke-width="15"/></g>');
+  o.push('<g transform="translate(152 734)">'+
+    '<rect x="0" y="0" width="134" height="178" rx="26" fill="'+P.bagGrey+'"/>'+
+    '<rect x="0" y="0" width="52" height="178" rx="26" fill="url(#gSheen)"/>'+
+    '<rect x="20" y="52" width="94" height="48" rx="14" fill="'+P.bagShade+'"/></g>');
+
+  E(336, 902, 62, 16, P.shadow, .35);
+  o.push('<g transform="translate(336 0)">'+
+    '<rect x="-46" y="854" width="92" height="48" rx="3" fill="'+P.trophyBase+'"/>'+
+    '<rect x="-46" y="854" width="24" height="48" fill="url(#gSheen)"/>'+
+    '<rect x="-30" y="810" width="60" height="46" rx="2" fill="'+P.trophyBase+'"/>'+
+    '<rect x="-15" y="746" width="30" height="66" fill="url(#gGold)"/>'+
+    '<path d="M-60 630 h120 l-16 78 a44 44 0 0 1 -88 0 z" fill="url(#gGold)"/>'+
+    '<path d="M-60 642 c-40 10 -40 62 8 66" fill="none" stroke="'+P.gold+'" stroke-width="13"/>'+
+    '<path d="M60 642 c40 10 40 62 -8 66" fill="none" stroke="'+P.gold+'" stroke-width="13"/>'+
+    '<path d="M-42 636 h20 l-8 74 h-6 z" fill="'+P.goldHi+'" opacity=".6"/>'+
+    '<path d="M-19 604 h38 l-8 26 h-22 z" fill="'+P.goldDark+'"/>'+
+    '<circle cy="594" r="13" fill="url(#gGold)"/></g>');
+
+  function deskMon(x, y, w, h, kind){
+    E(x+w/2, y+h+4, w*0.5, 10, P.shadow, .3);
+    R(x, y, w, h, 'url(#gMon)', 9);
+    R(x+12, y+12, w-24, h-12, kind === 'doc' ? P.docPaper : P.sheet);
+    if (kind === 'doc'){
+      for (var d=0; d<7; d++) R(x+30, y+28+d*13, (w-70) - (d%3)*70, 6, P.docInk, 1, .75);
+    } else {
+      R(x+12, y+12, w-24, 13, P.sheetHead);
+      for (var r1=0; r1<6; r1++) R(x+12, y+27+r1*13, w-24, 1.4, P.sheetLine);
+      for (var c1=0; c1<8; c1++) R(x+12+c1*((w-24)/8), y+12, 1.4, h-12, P.sheetLine);
+      R(x+80, y+40, 60, 12, P.sheetSel, 0, .5);
+    }
+    R(x+12, y+12, (w-24)*0.35, h-12, 'url(#gSheen)');
+  }
+  deskMon(440, 790, 452, 122, 'doc');
+  deskMon(932, 804, 462, 108, 'sheet');
+
+  E(1605, 894, 156, 12, P.shadow, .25);
+  R(1460,844,292,46,P.keyboard,7);
+  R(1460,844,292,10,'url(#gSheen)',7);
+  for (var kr=0; kr<3; kr++) R(1476, 854+kr*12, 260 - (kr===2?86:0), 7, P.keycap, 2);
+  R(1790,842,128,52,P.mousepad,6);
+  E(1853,866,19,26,P.mouse);
+  E(1977,896,24,7,P.shadow,.3);
+  R(1958,836,38,58,P.mug,5); R(1958,836,13,58,'url(#gSheen)',5);
+  E(1977,836,19,6,P.chai);
+  Pth('M2050 898 q62 -44 134 -18', null, P.lanyard, 9);
+  R(2180,874,36,26,P.plate,3);
+  R(2286,820,44,84,'url(#gSteel)',10);
+  R(2299,804,18,18,P.steelLo,3);
+  R(2400,858,124,30,P.note1,2);
+
+  deskMon(2520, 798, 442, 114, 'sheet');
+  deskMon(3010, 810, 400, 102, 'doc');
+  R(2700,846,112,46,P.mousepad,6);
+  E(2756,868,19,25,P.mouse);
+  R(2380,830,42,66,'url(#gSteel)',10);
+  R(2393,814,18,18,P.steelLo,3);
+  o.push('<g transform="translate(2960 826)"><rect x="0" y="0" width="88" height="66" rx="9" fill="'+P.note2+'"/>'+
+    '<rect x="0" y="0" width="30" height="66" rx="9" fill="url(#gSheen)"/>'+
+    '<rect x="0" y="28" width="88" height="6" fill="'+P.plate+'"/></g>');
+  Pth('M3140 900 q42 -56 98 -32', null, P.lanyard, 9);
+  R(2000,876,152,26,P.keycap,4);
+
+  return o.join('');
+}
+
+
+
+var DAY = {
+  ceil:"#DFE0D9", ceilHi:"#EDEEE7", ceilBand:"#C4C5BC", light:"#FFFFFF", lightWarm:"#FAF6E4", lightOff:"#CFD2CA", lampGlow:"0.3",
+  wall:"#E0DACD", wallHi:"#ECE7DB", wallLo:"#CBC4B4",
+  glass:"#C9D4D5", glassTop:"#DCE4E4", glassFig:"#5E6E70", frame:"#AEB1AA", frameHi:"#E4E6E0",
+  door:"#DAD4C6", doorHi:"#EFEBDF", doorFrame:"#B5AF9F", accentRed:"#BE3B2C",
+  orange:"#E8622A", orangeInk:"#FFF6EE", tv:"#1A1E21", tvFrame:"#2B3033",
+  board:"#EFEADB", boardFrame:"#B9B3A2", note1:"#F2D24B", note2:"#F09FBC", note3:"#96D2E4",
+  st1:"#F3B6C6", st2:"#F6D66B", st3:"#93D4C5", st4:"#F2A55D", st5:"#C4D6F0", st6:"#F5E6B4",
+  ac:"#F4F2EB", acHi:"#FFFFFF", acVent:"#CBC9C0", fan:"#DEDBD1", fanBack:"#CFCCC2", steelHi:"#F0EEE7", steelLo:"#9A968B",
+  floor:"#A69E90", floorLo:"#8E8779",
+  cubFace:"#BDB7AA", cubHi:"#D3CDC0", cubLo:"#9E988B", cubRail:"#A8A296", cubSeam:"#9C968A",
+  yellow:"#E2B02A", yellowHi:"#F3C748",
+  blue:"#2C4E9B", blueInk:"#FFFFFF", plate:"#F5F3EC",
+  desk:"#E9E5DA", deskHi:"#F8F6EF", deskEdge:"#B9B2A1",
+  chair:"#2B2B2E", chairHi:"#46464B", chairLo:"#171719", chairMesh:"#3A3A3F",
+  monitor:"#24272B", monitorHi:"#3A3E43", monitorLo:"#141618", monitorVent:"#43484E",
+  screen:"#DDE8E4", screenHi:"#F2F7F4", screenBar:"#3E7FC1", screenGlow:"0.16",
+  skin:["#B98A64","#A9764F","#C79C74","#8E6340"], hair:"#241C16",
+  shirt:["#4A5D75","#7C4A48","#3F6B55","#6A6A72","#8C6B3F","#57607A"],
+  mug:"#EFE9DC", chai:"#B5762F", shadow:"#1E1810",
+  gold:"#D3A52C", goldHi:"#F2D879", goldDark:"#A87E16", trophyBase:"#6E5116",
+  pot:"#AFA2C0", plant:"#4E8C48", plant2:"#6FA95C",
+  docPaper:"#CBAE87", docInk:"#6E5631", sheet:"#FAFAF6", sheetLine:"#C7CDC7", sheetHead:"#2E7D4F", sheetSel:"#5B9BD5",
+  keyboard:"#232323", keycap:"#3A3A38", mousepad:"#28383F", mouse:"#2E2E2C",
+  lanyard:"#2C4E9B", bagTeal:"#2E93B8", bagGrey:"#6E6E70", bagShade:"#00000033",
+  bags:["#2E93B8","#7C4A48","#3F6B55","#6A6A72","#B4574F"]
+};
+var NIGHT = {
+  ceil:"#121C21", ceilHi:"#1A262C", ceilBand:"#0C1418", light:"#DCEFE6", lightWarm:"#C2DCD2", lightOff:"#18222700", lampGlow:"0.8",
+  lightOff:"#19232A",
+  wall:"#17222A", wallHi:"#1E2C34", wallLo:"#101A20",
+  glass:"#1A2A31", glassTop:"#22343C", glassFig:"#4A6169", frame:"#263740", frameHi:"#354A54",
+  door:"#18242A", doorHi:"#22323A", doorFrame:"#28383F", accentRed:"#8E3225",
+  orange:"#B5511F", orangeInk:"#FFE6D2", tv:"#090C0E", tvFrame:"#171C1F",
+  board:"#1D2A31", boardFrame:"#26363E", note1:"#C6AB3C", note2:"#B2798F", note3:"#6B9EAE",
+  st1:"#8A6572", st2:"#93803E", st3:"#4C7B72", st4:"#8B6036", st5:"#6A7890", st6:"#878062",
+  ac:"#1F2E35", acHi:"#2C3F47", acVent:"#16222700", acVent:"#172228", fan:"#36484E", fanBack:"#1B272D", steelHi:"#8FA2A8", steelLo:"#4E6067",
+  floor:"#141E24", floorLo:"#0F171C",
+  cubFace:"#26333A", cubHi:"#31424A", cubLo:"#1B252B", cubRail:"#1F2B32", cubSeam:"#18222700", cubSeam:"#182228",
+  yellow:"#9A7620", yellowHi:"#B78E２8", yellowHi:"#B78E28",
+  blue:"#22396E", blueInk:"#E8EEF6", plate:"#C4CED3",
+  desk:"#28363C", deskHi:"#35464D", deskEdge:"#182329",
+  chair:"#131719", chairHi:"#242B2E", chairLo:"#0B0E0F", chairMesh:"#1B2225",
+  monitor:"#0C0F11", monitorHi:"#1B2226", monitorLo:"#060809", monitorVent:"#232B30",
+  screen:"#7FD6C2", screenHi:"#A8E8D9", screenBar:"#2E5F94", screenGlow:"0.5",
+  skin:["#8A6549","#7C573B","#96725A","#6B4A31"], hair:"#15100C",
+  shirt:["#33445A","#5A3332","#2C4F3E","#4A4A52","#63502F","#3E465C"],
+  mug:"#A9A396", chai:"#8A5822", shadow:"#000000",
+  gold:"#C0942A", goldHi:"#E3C765", goldDark:"#8E6A14", trophyBase:"#4E3912",
+  pot:"#74697F", plant:"#3A6B37", plant2:"#508044",
+  docPaper:"#9C8464", docInk:"#584429", sheet:"#C6D0CB", sheetLine:"#8A9A92", sheetHead:"#245F3C", sheetSel:"#3E6E9E",
+  keyboard:"#101010", keycap:"#212120", mousepad:"#14232A", mouse:"#1A1A18",
+  lanyard:"#2E5A96", bagTeal:"#23708C", bagGrey:"#45454700", bagGrey:"#454547", bagShade:"#00000044",
+  bags:["#23708C","#5A3332","#2C4F3E","#4A4A52","#7A3A34"]
+};
+
+
+(function(){
+"use strict";
+
+/* =========================================================
+   प्लेलिस्ट लग चुकी है: "Motivational Songs" (३५ गाने)।
+   बदलनी हो तो यूट्यूब पर नई प्लेलिस्ट खोलो, पते में
+   list= के बाद वाला हिस्सा कॉपी करके नीचे कोट्स में डाल दो।
+   ख़ाली कर दोगे तो songs/ फ़ोल्डर वाले गाने चलेंगे।
+   ========================================================= */
+var YT_PLAYLIST = "PLRrjfAbstME0";
+
+var $ = function(s){ return document.querySelector(s); };
+var dev = function(s){ return String(s).replace(/[0-9]/g, function(d){ return "०१२३४५६७८९"[d]; }); };
+
+/* clock + shift — लॉगिन २ बजे, चाय ५ बजे, लॉग आउट ११ बजे */
+var SHIFT = { inn:14, tea:17, teaEnd:17.5, out:23 };
+function gap(hrs){
+  var mins = Math.max(0, Math.round(hrs*60)), h = Math.floor(mins/60), m = mins%60;
+  if (h && m) return dev(h)+" घं "+dev(m)+" मि";
+  if (h) return dev(h)+" घंटे";
+  return dev(m)+" मिनट";
+}
+var teaOn = false;
+function tick(){
+  var d = new Date(), H = d.getHours(), M = d.getMinutes(), h = H + M/60;
+  var hh = H % 12 || 12, part = (H>=17||H<5) ? "रात" : H<12 ? "सुबह" : "दोपहर";
+  $("#clock").textContent = dev(hh)+":"+dev(String(M).padStart(2,"0"))+" "+part;
+
+  var pill = $("#shift"), txt, inTea = (h >= SHIFT.tea && h < SHIFT.teaEnd);
+  if (h < SHIFT.inn)            txt = "लॉगिन में "+gap(SHIFT.inn - h);
+  else if (inTea)               txt = "चाय का टाइम";
+  else if (h < SHIFT.tea)       txt = "चाय में "+gap(SHIFT.tea - h);
+  else if (h < SHIFT.out)       txt = "लॉग आउट में "+gap(SHIFT.out - h);
+  else                          txt = "शिफ़्ट ख़त्म";
+  pill.textContent = txt;
+  pill.classList.toggle("tea", inTea);
+
+  var k = Math.max(0, Math.min(1, (h - SHIFT.inn) / (SHIFT.out - SHIFT.inn)));
+  $("#progfill").style.width = (k*100).toFixed(2)+"%";
+
+  if (inTea && !teaOn){ teaOn = true; teaRush(); }
+  if (!inTea) teaOn = false;
+
+  autoLight(H);
+}
+/* started below, once the scene exists */
+
+/* theme + scene */
+var root = document.documentElement, pano = $("#pano");
+function isDark(){
+  var a = root.getAttribute("data-theme");
+  return a ? a === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+function paint(){
+  var keep = pano.scrollLeft;
+  $("#scene").innerHTML = buildScene(isDark() ? NIGHT : DAY);
+  pano.scrollLeft = keep;
+  $("#theme").textContent = isDark() ? "दिन कर दो" : "रात कर दो";
+}
+var chosen = false;
+try { var sv = localStorage.getItem("c78-theme"); if (sv){ root.setAttribute("data-theme", sv); chosen = true; } } catch(e){}
+function autoLight(H){
+  if (chosen || !root) return;
+  var want = (H >= 18 || H < 6) ? "dark" : "light";
+  if (root.getAttribute("data-theme") !== want){ root.setAttribute("data-theme", want); paint(); }
+}
+paint();
+tick(); setInterval(tick, 30000);
+$("#theme").addEventListener("click", function(){
+  var next = isDark() ? "light" : "dark";
+  chosen = true;
+  root.setAttribute("data-theme", next);
+  try { localStorage.setItem("c78-theme", next); } catch(e){}
+  paint();
+});
+
+/* wall fan */
+var ang = 0;
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+  setInterval(function(){
+    ang = (ang + 17) % 360;
+    var b = document.querySelector(".fanblades");
+    if (b) b.setAttribute("transform","rotate("+ang+")");
+  }, 45);
+}
+
+/* panning */
+var moved = false, auto = null, hint = $("#hint");
+function stopAuto(){ if (auto){ cancelAnimationFrame(auto); auto = null; } moved = true; hint.style.opacity = 0; }
+["pointerdown","wheel","touchstart","keydown"].forEach(function(e){ pano.addEventListener(e, stopAuto, {passive:true}); });
+var down = false, sx = 0, sl = 0;
+pano.addEventListener("pointerdown", function(e){
+  down = true; sx = e.clientX; sl = pano.scrollLeft;
+  pano.classList.add("grabbing"); pano.setPointerCapture(e.pointerId);
+});
+pano.addEventListener("pointermove", function(e){ if (down) pano.scrollLeft = sl - (e.clientX - sx); });
+["pointerup","pointercancel"].forEach(function(e){
+  pano.addEventListener(e, function(){ down = false; pano.classList.remove("grabbing"); });
+});
+pano.addEventListener("wheel", function(e){
+  if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ pano.scrollLeft += e.deltaY; e.preventDefault(); }
+}, {passive:false});
+document.addEventListener("keydown", function(e){
+  if (e.key === "ArrowRight"){ stopAuto(); pano.scrollLeft += 120; }
+  if (e.key === "ArrowLeft"){ stopAuto(); pano.scrollLeft -= 120; }
+});
+function startAuto(){
+  var max = pano.scrollWidth - pano.clientWidth;
+  if (max < 40 || window.matchMedia("(prefers-reduced-motion: reduce)").matches){ hint.style.opacity = 0; return; }
+  pano.scrollLeft = 0;
+  var t0 = null, dur = 24000;
+  auto = requestAnimationFrame(function step(t){
+    if (moved) return;
+    if (!t0) t0 = t;
+    var k = Math.min((t - t0)/dur, 1);
+    pano.scrollLeft = max * (k < .5 ? 2*k*k : 1 - Math.pow(-2*k+2,2)/2);
+    if (k < 1) auto = requestAnimationFrame(step); else { auto = null; hint.style.opacity = 0; }
+  });
+}
+$("#jump").addEventListener("click", function(e){
+  var b = e.target.closest("button[data-x]"); if (!b) return;
+  stopAuto();
+  var max = pano.scrollWidth - pano.clientWidth;
+  pano.scrollTo({ left: Math.max(0, Math.min(max, pano.scrollWidth * (+b.dataset.x) - pano.clientWidth/2)), behavior:"smooth" });
+});
+
+/* panels */
+function closeAll(){
+  document.querySelectorAll(".panel").forEach(function(p){ p.classList.remove("on"); });
+  document.querySelectorAll("[data-panel]").forEach(function(b){ b.setAttribute("aria-pressed","false"); });
+}
+document.querySelectorAll("[data-panel]").forEach(function(b){
+  b.addEventListener("click", function(){
+    var el = document.getElementById(b.dataset.panel), open = el.classList.contains("on");
+    closeAll();
+    if (!open){ el.classList.add("on"); b.setAttribute("aria-pressed","true"); }
+  });
+});
+document.querySelectorAll("[data-close]").forEach(function(b){ b.addEventListener("click", closeAll); });
+document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeAll(); });
+
+/* notes + songs */
+var notes = [
+ "दोपहर २ बजे का लॉगिन — और उससे ठीक पहले वाली आख़िरी नींद।",
+ "५ बजे चाय। पूरे फ़्लोर की घड़ी उसी एक वक़्त पर सेट है।",
+ "रात ११ बजे लॉग आउट, और बाहर निकलते ही वो ठंडी हवा।",
+ "बाहर अँधेरा हो जाता है, पर अंदर वही ट्यूबलाइट वाली दोपहर चलती रहती है।",
+ "मॉनिटर पर एक्सेल, और उसके पीछे छुपा हुआ गाना।",
+ "ट्रॉफ़ी टीम को बहुत पहले मिली थी। धूल खा रही है, पर हटाता कोई नहीं।",
+ "स्टील की बोतल, जो हर घंटे भरनी पड़ती है — और कूलर हमेशा दूसरे कोने में।",
+ "ए.सी. की वो एक सीट, जिसके नीचे कोई बैठना नहीं चाहता।",
+ "आख़िरी मेल भेजने के बाद वाली साँस।",
+ "बैग कुर्सी पर टँगा है, मतलब बंदा अभी गया नहीं।",
+ "कीबोर्ड की आवाज़ से पता चल जाता है कौन काम कर रहा है और कौन चैट।",
+ "११ बजे के बाद पार्किंग में वो दस मिनट, जो सबसे अच्छे होते हैं।"
+];
+$("#notes").innerHTML = notes.map(function(t){ return '<div class="note">'+t+'</div>'; }).join("");
+
+var songs = [["कर हर मैदान फ़तह","सुल्तान"],["ज़िंदा","भाग मिल्खा भाग"],["चक दे इंडिया","चक दे! इंडिया"],
+ ["कंधों से मिलते हैं कंधे","लक्ष्य"],["रूबरू","रंग दे बसंती"],["अपना टाइम आएगा","गली बॉय"],
+ ["दंगल","दंगल"],["ये होसला","डोर"],["मंज़िलें अपनी जगह हैं","शराबी"],
+ ["सपने जो देखे हैं","लक बाय चांस"],["यूँ ही चला चल","स्वदेस"],["हम होंगे कामयाब","पारंपरिक"]];
+$("#songs").innerHTML = songs.map(function(a){
+  return '<li><span>'+a[0]+'</span><span class="flm">'+a[1]+'</span>'+
+   '<a target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query='+
+   encodeURIComponent(a[0]+" "+a[1])+'">यूट्यूब</a></li>';
+}).join("");
+
+/* player */
+var audio = $("#audio"), list = [], idx = -1;
+
+/* songs/ folder next to this page: 1.mp3, 2.mp3 ... up to 30.
+   Optional songs/list.json = [{"name":"ज़िंदा","file":"1.mp3"}, ...] for real names. */
+function probe(url){
+  return new Promise(function(res){
+    var a = new Audio(), done = false;
+    function ok(){ if (!done){ done = true; res(true); } }
+    function no(){ if (!done){ done = true; res(false); } }
+    a.addEventListener("loadedmetadata", ok);
+    a.addEventListener("error", no);
+    a.preload = "metadata"; a.src = url;
+    setTimeout(no, 7000);
+  });
+}
+function findSongs(){
+  fetch("songs/list.json").then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; })
+  .then(function(named){
+    if (named && named.length){
+      list = named.map(function(s){ return { name:s.name || s.file, src:"songs/"+s.file }; });
+      $("#nowsub").textContent = dev(list.length)+" गाने तैयार हैं";
+      load(0, false); return;
+    }
+    var jobs = [];
+    for (var i=1;i<=30;i++) (function(i){
+      jobs.push(probe("songs/"+i+".mp3").then(function(f){ return f ? i : 0; }));
+    })(i);
+    Promise.all(jobs).then(function(found){
+      var got = found.filter(Boolean).sort(function(a,b){ return a-b; });
+      if (!got.length){ $("#nowsub").textContent = "“गाने चुनो” दबाओ"; return; }
+      list = got.map(function(i){ return { name:"गाना "+dev(i), src:"songs/"+i+".mp3" }; });
+      $("#nowsub").textContent = dev(list.length)+" गाने तैयार हैं";
+      load(0, false);
+    });
+  }).catch(function(){ $("#nowsub").textContent = "“गाने चुनो” दबाओ"; });
+}
+audio.volume = .85;
+$("#musicvol").addEventListener("input", function(e){ audio.volume = e.target.value/100; if (ytOn) yt.setVolume(+e.target.value); });
+function renderQueue(){
+  var q = $("#queue");
+  if (!list.length){ q.innerHTML = '<li style="cursor:default; color:var(--soft)">अभी कुछ नहीं लगा है।</li>'; return; }
+  q.innerHTML = list.map(function(f,i){
+    return '<li data-i="'+i+'" aria-current="'+(i===idx)+'"><span class="n">'+dev(i+1)+'</span><span>'+
+      f.name.replace(/\.[^.]+$/,"")+'</span></li>';
+  }).join("");
+}
+$("#queue").addEventListener("click", function(e){
+  var li = e.target.closest("li[data-i]"); if (li) load(+li.dataset.i, true);
+});
+function load(i, play){
+  if (!list.length) return;
+  idx = (i + list.length) % list.length;
+  audio.src = list[idx].src;
+  var nm = list[idx].name.replace(/\.[^.]+$/,"");
+  $("#nowtitle").textContent = nm;
+  $("#nowsub").textContent = "क़तार में "+dev(idx+1)+" / "+dev(list.length);
+  renderQueue();
+  if (play) audio.play().catch(function(){});
+}
+$("#files").addEventListener("change", function(e){
+  var picked = Array.prototype.slice.call(e.target.files || []);
+  if (!picked.length) return;
+  list = list.concat(picked.map(function(f){ return {src:URL.createObjectURL(f), name:f.name}; }));
+  if (idx === -1) load(0, true); else renderQueue();
+});
+/* ---------- YouTube ---------- */
+var yt = null, ytOn = false;
+function ytLoad(){
+  if (!YT_PLAYLIST) return;
+  $("#nowsub").textContent = "प्लेलिस्ट खुल रही है…";
+  window.onYouTubeIframeAPIReady = function(){
+    yt = new YT.Player("ytplayer", {
+      height:"145", width:"242",
+      playerVars:{ listType:"playlist", list:YT_PLAYLIST, autoplay:1, playsinline:1, rel:0, modestbranding:1 },
+      events:{
+        onReady: function(){
+          ytOn = true;
+          $("#ytbox").classList.add("on");
+          $("#ytfoot").textContent = "मोटिवेशनल गाने";
+          yt.setVolume(+$("#musicvol").value);
+          yt.playVideo();
+          setInterval(ytName, 2000);
+        },
+        onStateChange: function(e){
+          var playing = e.data === 1;
+          $("#dock").classList.toggle("playing", playing);
+          $("#play").textContent = playing ? "रोको" : "चलाओ";
+          ytName();
+        },
+        onError: function(){
+          $("#nowsub").textContent = "ये गाना एम्बेड नहीं हो सकता — अगला चल रहा है";
+          try { yt.nextVideo(); } catch(e){}
+        }
+      }
+    });
+  };
+  var tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  tag.onerror = function(){ $("#nowsub").textContent = "यूट्यूब नहीं खुला — “गाने चुनो” दबाओ"; };
+  document.head.appendChild(tag);
+}
+function ytName(){
+  if (!ytOn) return;
+  try {
+    var d = yt.getVideoData();
+    if (d && d.title){
+      $("#nowtitle").textContent = d.title;
+      var i = yt.getPlaylistIndex(), n = (yt.getPlaylist()||[]).length;
+      $("#nowsub").textContent = n ? ("यूट्यूब · "+dev(i+1)+" / "+dev(n)) : "यूट्यूब प्लेलिस्ट";
+    }
+  } catch(e){}
+}
+
+function toggle(){
+  if (ytOn){ if (yt.getPlayerState() === 1) yt.pauseVideo(); else yt.playVideo(); return; }
+  if (!list.length){ $("#files").click(); return; }
+  if (audio.paused) audio.play().catch(function(){}); else audio.pause();
+}
+$("#play").addEventListener("click", toggle);
+$("#prev").addEventListener("click", function(){ if (ytOn){ yt.previousVideo(); return; } load(idx-1, true); });
+$("#next").addEventListener("click", function(){ if (ytOn){ yt.nextVideo(); return; } load(idx+1, true); });
+audio.addEventListener("play", function(){ $("#dock").classList.add("playing"); $("#play").textContent = "रोको"; });
+audio.addEventListener("pause", function(){ $("#dock").classList.remove("playing"); $("#play").textContent = "चलाओ"; });
+audio.addEventListener("ended", function(){ load(idx+1, true); });
+document.addEventListener("keydown", function(e){
+  if (e.code === "Space" && !/input|textarea|button|select|label/i.test(e.target.tagName)){ e.preventDefault(); toggle(); }
+});
+
+/* ambience */
+var CH = [
+  {id:"fan",   nm:"पंखा",          v:36},
+  {id:"ac",    nm:"ए.सी. की घरघर", v:44},
+  {id:"tube",  nm:"ट्यूबलाइट",     v:20},
+  {id:"keys",  nm:"कीबोर्ड",       v:58},
+  {id:"talk",  nm:"दूर की बातचीत", v:44},
+  {id:"tea",   nm:"चाय की ट्रॉली", v:26},
+  {id:"phone", nm:"इंटरकॉम",       v:16}
+];
+var actx = null, master = null, g = {}, noise = null, muted = false;
+function makeNoise(ctx, secs, brown){
+  var b = ctx.createBuffer(1, ctx.sampleRate*secs, ctx.sampleRate), d = b.getChannelData(0), last = 0;
+  for (var i=0;i<d.length;i++){
+    var w = Math.random()*2-1;
+    if (brown){ last = (last + .02*w)/1.02; d[i] = last*3.2; } else d[i] = w;
+  }
+  return b;
+}
+function chan(id){ var x = actx.createGain(); x.gain.value = 0; x.connect(master); g[id] = x; return x; }
+function burst(dest, freq, q, peak, atk, dec){
+  var s = actx.createBufferSource(); s.buffer = noise;
+  s.playbackRate.value = .8 + Math.random()*.6;
+  var f = actx.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = freq; f.Q.value = q;
+  var e = actx.createGain(), t = actx.currentTime;
+  e.gain.setValueAtTime(.0001,t);
+  e.gain.exponentialRampToValueAtTime(peak,t+atk);
+  e.gain.exponentialRampToValueAtTime(.0001,t+atk+dec);
+  s.connect(f); f.connect(e); e.connect(dest); s.start(t); s.stop(t+atk+dec+.05);
+}
+function ping(dest, freq, peak, dur){
+  var oc = actx.createOscillator(), e = actx.createGain(), t = actx.currentTime;
+  oc.type = "sine"; oc.frequency.value = freq;
+  e.gain.setValueAtTime(.0001,t);
+  e.gain.exponentialRampToValueAtTime(peak,t+.004);
+  e.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  oc.connect(e); e.connect(dest); oc.start(t); oc.stop(t+dur+.03);
+}
+function every(lo, hi, fn){
+  var run = function(){ fn(); setTimeout(run, lo + Math.random()*(hi-lo)); };
+  setTimeout(run, lo + Math.random()*(hi-lo));
+}
+function setChan(id, val){
+  if (!g[id] || !actx) return;
+  var v = val/100, sc = {fan:.5, ac:.42, tube:.5, keys:.9, talk:.85, tea:.9, phone:.8}[id] || .6;
+  g[id].gain.setTargetAtTime(v*v*sc, actx.currentTime, .12);
+}
+function startAmbience(){
+  var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+  actx = new AC();
+  master = actx.createGain(); master.gain.value = .9; master.connect(actx.destination);
+  noise = makeNoise(actx, 3, false);
+  var brown = makeNoise(actx, 4, true);
+
+  var fan = chan("fan");
+  var fs = actx.createBufferSource(); fs.buffer = brown; fs.loop = true;
+  var ff = actx.createBiquadFilter(); ff.type = "lowpass"; ff.frequency.value = 520;
+  var fw = actx.createGain(); fw.gain.value = .55;
+  var lfo = actx.createOscillator(); lfo.frequency.value = 3.6;
+  var lgn = actx.createGain(); lgn.gain.value = .18;
+  lfo.connect(lgn); lgn.connect(fw.gain);
+  fs.connect(ff); ff.connect(fw); fw.connect(fan); fs.start(); lfo.start();
+
+  var ac = chan("ac");
+  var as = actx.createBufferSource(); as.buffer = brown; as.loop = true;
+  var af = actx.createBiquadFilter(); af.type = "lowpass"; af.frequency.value = 220;
+  var ag = actx.createGain(); ag.gain.value = .9;
+  as.connect(af); af.connect(ag); ag.connect(ac); as.start();
+
+  var tb = chan("tube");
+  [100,200,300].forEach(function(f,i){
+    var oc = actx.createOscillator(); oc.type = "sine"; oc.frequency.value = f;
+    var hg = actx.createGain(); hg.gain.value = .05/(i+1);
+    oc.connect(hg); hg.connect(tb); oc.start();
+  });
+
+  var kb = chan("keys");
+  every(40, 250, function(){ burst(kb, 1800+Math.random()*2200, 3, .16, .001, .028); });
+  every(1400, 5200, function(){ burst(kb, 700, 2, .14, .002, .12); });
+
+  var tk = chan("talk");
+  every(1600, 6000, function(){
+    var c = 2 + Math.floor(Math.random()*4);
+    for (var i=0;i<c;i++) (function(i){
+      setTimeout(function(){ burst(tk, 340+Math.random()*520, 5, .1, .06, .18+Math.random()*.2); }, i*150);
+    })(i);
+  });
+
+  var tea = chan("tea");
+  every(14000, 40000, function(){
+    var c = 3 + Math.floor(Math.random()*4);
+    for (var i=0;i<c;i++) (function(i){
+      setTimeout(function(){ ping(tea, 1200+Math.random()*1500, .12, .22); }, i*110 + Math.random()*70);
+    })(i);
+    setTimeout(function(){ burst(tea, 260, 1.4, .07, .05, .5); }, 260);
+  });
+
+  var ph = chan("phone");
+  every(28000, 75000, function(){
+    for (var i=0;i<4;i++) (function(i){
+      setTimeout(function(){ ping(ph, i%2 ? 880 : 1180, .18, .16); }, i*210);
+    })(i);
+  });
+
+  CH.forEach(function(c){ setChan(c.id, c.v); });
+}
+$("#mix").innerHTML = CH.map(function(c){
+  return '<div class="chan"><span class="nm">'+c.nm+'</span><span class="pc" id="pc-'+c.id+'">'+dev(c.v)+'</span>'+
+    '<input type="range" min="0" max="100" value="'+c.v+'" data-ch="'+c.id+'" aria-label="'+c.nm+'"></div>';
+}).join("");
+$("#mix").addEventListener("input", function(e){
+  var id = e.target.dataset.ch; if (!id) return;
+  $("#pc-"+id).textContent = dev(e.target.value);
+  setChan(id, +e.target.value);
+});
+function setMix(p){
+  Object.keys(p).forEach(function(id){
+    var s = document.querySelector('[data-ch="'+id+'"]');
+    if (s) s.value = p[id];
+    var l = $("#pc-"+id); if (l) l.textContent = dev(p[id]);
+    setChan(id, p[id]);
+  });
+}
+var PRESETS = {
+  day:  {fan:44,ac:40,tube:16,keys:74,talk:66,tea:34,phone:34},
+  night:{fan:34,ac:48,tube:26,keys:46,talk:26,tea:20,phone:10},
+  tea:  {fan:30,ac:26,tube:12,keys:14,talk:62,tea:80,phone:8},
+  quiet:{fan:0,ac:0,tube:0,keys:0,talk:0,tea:0,phone:0}
+};
+document.querySelectorAll("[data-preset]").forEach(function(b){
+  b.addEventListener("click", function(){
+    setMix(PRESETS[b.dataset.preset]);
+  });
+});
+$("#mute").addEventListener("click", function(){
+  muted = !muted;
+  if (master) master.gain.setTargetAtTime(muted ? 0 : .9, actx.currentTime, .1);
+  $("#mute").textContent = muted ? "आवाज़ चालू" : "आवाज़ बंद";
+  $("#mute").setAttribute("aria-pressed", muted);
+});
+
+function teaRush(){
+  if (!actx) return;
+  setMix({tea:88, talk:74, keys:18});
+  var h = $("#hint");
+  h.textContent = "चाय आ गई";
+  h.style.opacity = 1;
+  setTimeout(function(){ h.style.opacity = 0; }, 6000);
+}
+
+/* go */
+$("#start").addEventListener("click", function(){
+  try { startAmbience(); } catch(e){}
+  try { if (YT_PLAYLIST) ytLoad(); else findSongs(); } catch(e){}
+  $("#gate").style.display = "none";
+  setTimeout(startAuto, 250);
+});
+})();
+</script>
+</body>
+</html>
