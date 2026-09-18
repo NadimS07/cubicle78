@@ -11,19 +11,19 @@
 :root{
   --ink:#241F17; --soft:#5F5749; --glass:rgba(248,246,240,.9); --edge:rgba(40,32,18,.16);
   --blue:#2C4E9B; --orange:#D9541F; --mustard:#D9A518; --bg:#DCD7CA;
-  --pop:#FFFFFF; --shadow:0 14px 40px rgba(40,32,14,.22);
+  --pop:#FFFFFF; --shadow:0 14px 40px rgba(40,32,14,.22); --joshglow:rgba(250,248,240,.95);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --ink:#E7EEEA; --soft:#93A7A4; --glass:rgba(16,26,31,.86); --edge:rgba(160,200,200,.18);
     --blue:#5D89D6; --orange:#E67A3C; --mustard:#D9AD36; --bg:#0D1519;
-    --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6);
+    --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6); --joshglow:rgba(6,12,15,.95);
   }
 }
 :root[data-theme="dark"]{
   --ink:#E7EEEA; --soft:#93A7A4; --glass:rgba(16,26,31,.86); --edge:rgba(160,200,200,.18);
   --blue:#5D89D6; --orange:#E67A3C; --mustard:#D9AD36; --bg:#0D1519;
-  --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6);
+  --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6); --joshglow:rgba(6,12,15,.95);
 }
 
 *{box-sizing:border-box}
@@ -68,6 +68,12 @@ button{font-family:'Hind',sans-serif}
 .jump::-webkit-scrollbar{display:none}
 .jump .pill{flex:none}
 
+.josh{position:absolute; top:5.6rem; left:50%; transform:translateX(-50%); z-index:9;
+  font-family:'Rozha One',serif; font-size:clamp(1.15rem,2.6vw,1.9rem); color:var(--ink);
+  text-align:center; max-width:min(620px,88vw); pointer-events:none; opacity:0;
+  transition:opacity 1.6s ease; text-shadow:0 2px 16px var(--joshglow), 0 1px 4px var(--joshglow)}
+.josh.on{opacity:.95}
+@media (max-width:640px){ .josh{top:5rem} }
 .hint{position:absolute; left:50%; bottom:8.5rem; transform:translateX(-50%); z-index:9;
   background:rgba(22,16,6,.7); color:#F6F2E8; padding:.28rem 1rem; border-radius:999px;
   font-size:.88rem; pointer-events:none; transition:opacity .5s ease}
@@ -133,13 +139,10 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
 .note:nth-child(3n+2){background:#F3DE8C}
 .note:nth-child(3n+3){background:#EFC8A0}
 
-.ytbox{position:absolute; right:max(12px, env(safe-area-inset-right)); bottom:4.6rem; z-index:11;
-  width:258px; background:var(--glass); backdrop-filter:blur(14px); border:1px solid var(--edge);
-  border-radius:12px; box-shadow:var(--shadow); padding:8px 8px 4px; display:none}
+.ytbox{width:144px; height:81px; flex:none; border-radius:6px; overflow:hidden; background:#000;
+  border:1px solid var(--edge); display:none; line-height:0}
 .ytbox.on{display:block}
-.ytscreen{border-radius:6px; overflow:hidden; background:#000; line-height:0}
-.ytfoot{font-size:.72rem; color:var(--soft); text-align:center; padding:3px 0 1px}
-@media (max-width:640px){ .ytbox{width:212px; bottom:8.4rem} }
+@media (max-width:640px){ .ytbox{width:112px; height:63px} }
 
 /* ---------- gate ---------- */
 #gate{position:fixed; inset:0; z-index:100; display:grid; place-items:center; background:var(--bg);
@@ -197,30 +200,8 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
   <button class="pill" data-x="0.95">रंगीन दीवार</button>
 </div>
 
+<div class="josh" id="josh"></div>
 <div class="hint" id="hint">खींच के पूरा फ़्लोर देखो</div>
-
-<div class="panel" id="p-songs">
-  <button class="pill x" data-close>बंद</button>
-  <h2>प्लेलिस्ट लग चुकी है</h2>
-  <p class="lede">तुम्हारी “Motivational Songs” प्लेलिस्ट इस पेज में जुड़ी हुई है — ३५ गाने। कुछ डाउनलोड नहीं करना।</p>
-  <ol class="steps">
-    <li>इस फ़ाइल का नाम पहले से <b>index.html</b> है। इसे एक फ़ोल्डर में रख दो।</li>
-    <li>फ़ोल्डर को <b>app.netlify.com/drop</b> पर छोड़ दो।</li>
-    <li>जो लिंक मिले वो फ़्लोर पर भेज दो। बस।</li>
-  </ol>
-  <p class="small">प्लेलिस्ट बदलनी हो तो फ़ाइल Notepad में खोलो, ऊपर <b>YT_PLAYLIST</b> ढूँढो और नया ID डाल दो।</p>
-  <p class="small"><b>ध्यान रहे:</b> ये फ़ाइल इंटरनेट पर होनी ज़रूरी है। सीधे कंप्यूटर से खोलोगे तो यूट्यूब नहीं चलेगा।</p>
-  <p class="small">कुछ फ़िल्मी गाने कंपनी ने एम्बेड करने से रोके होते हैं — वो अपने आप छूटकर अगला चल जाएगा। बीच में विज्ञापन भी आ सकते हैं।</p>
-  <h2 style="font-size:1.25rem; margin-top:1rem">क़तार</h2>
-  <ul class="queue" id="queue"><li style="cursor:default; color:var(--soft)">अभी कुछ नहीं लगा है।</li></ul>
-</div>
-
-<div class="panel" id="p-list">
-  <button class="pill x" data-close>बंद</button>
-  <h2>जोश वाली लिस्ट</h2>
-  <p class="lede">याद न आ रहा हो कि क्या लगाना है तो यहाँ से शुरू करो।</p>
-  <ul class="songs" id="songs"></ul>
-</div>
 
 <div class="panel" id="p-mix">
   <button class="pill x" data-close>बंद</button>
@@ -243,21 +224,18 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
 </div>
 
 <div class="dock" id="dock">
+  <div class="ytbox" id="ytbox"><div id="ytplayer"></div></div>
   <svg class="reel" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#241D14"/><g class="spin"><circle cx="50" cy="50" r="26" fill="#0f0c08"/><circle cx="50" cy="50" r="12" fill="#C9BA96"/><g stroke="#C9BA96" stroke-width="8" stroke-linecap="round"><line x1="50" y1="24" x2="50" y2="36"/><line x1="50" y1="64" x2="50" y2="76"/><line x1="24" y1="50" x2="36" y2="50"/><line x1="64" y1="50" x2="76" y2="50"/></g></g></svg>
-  <div class="track"><div class="t" id="nowtitle">कोई गाना नहीं लगा है</div><div class="s" id="nowsub">मोटिवेशनल गाने · ३५</div></div>
+  <div class="track"><div class="t" id="nowtitle">कोई गाना नहीं लगा है</div><div class="s" id="nowsub"></div></div>
   <button class="key" id="prev">पिछला</button>
   <button class="key big" id="play">चलाओ</button>
   <button class="key" id="next">अगला</button>
   <div class="vol"><span>आवाज़</span><input type="range" id="musicvol" min="0" max="100" value="85" aria-label="गाने की आवाज़"></div>
   <label class="file">गाने चुनो<input type="file" id="files" accept="audio/*" multiple></label>
   <span class="spacer"></span>
-  <button class="pill" data-panel="p-songs">कैसे लगाएँ</button>
-  <button class="pill" data-panel="p-list">जोश वाली लिस्ट</button>
   <button class="pill" data-panel="p-mix">फ़्लोर की आवाज़</button>
   <button class="pill" data-panel="p-notes">यादें</button>
 </div>
-
-<div class="ytbox" id="ytbox"><div class="ytscreen"><div id="ytplayer"></div></div><div class="ytfoot" id="ytfoot">यूट्यूब</div></div>
 
 <audio id="audio"></audio>
 
@@ -315,7 +293,7 @@ function buildScene(P){
   '</defs>');
 
   /* ================= ceiling ================= */
-  o.push('<g filter="url(#dof2)">');
+  o.push('<g filter="url(#dof1)">');
   R(0,0,SCENE_W,268,'url(#gCeil)');
   R(0,142,SCENE_W,26,P.ceilBand); R(0,142,SCENE_W,3,P.ceilHi);
   R(0,210,SCENE_W,15,P.ceilBand); R(0,210,SCENE_W,2,P.ceilHi);
@@ -323,7 +301,7 @@ function buildScene(P){
   for (var t=0;t<tiers.length;t++){
     var ly=tiers[t][0], lw=tiers[t][1], lh=tiers[t][2], lsp=tiers[t][3];
     for (var lx=-50; lx<SCENE_W+90; lx+=lsp){
-      if (rnd() > (t===2 ? .13 : .04)){
+      if (rnd() > .03){
         o.push('<g filter="url(#lamp)" opacity="'+P.lampGlow+'"><rect x="'+n(lx-9)+'" y="'+n(ly-7)+'" width="'+n(lw+18)+'" height="'+n(lh+14)+'" rx="8" fill="'+P.light+'"/></g>');
         R(lx,ly,lw,lh,'url(#gLight)',3);
       } else R(lx,ly,lw,lh,P.lightOff,3);
@@ -368,6 +346,13 @@ function buildScene(P){
   for (var nb=0;nb<6;nb++) R(2192+(nb%3)*48, 308+Math.floor(nb/3)*48, 40, 40, pick([P.note1,P.note2,P.note3]), 1, .95);
 
   R(2430,372,20,58,P.accentRed,5); R(2435,362,10,12,P.steelLo);
+  // water cooler
+  R(2490,366,54,86,P.ac,4); R(2490,366,18,86,'url(#gSheen)',4);
+  R(2500,318,34,48,P.coolerJar,6); R(2506,312,22,10,P.steelLo,3);
+  R(2496,392,42,7,P.acVent,2);
+  // standing whiteboard
+  R(2350,300,66,96,P.boardFrame,2); R(2354,304,58,88,P.board);
+  R(2360,316,44,4,P.accentRed,0,.7); R(2360,328,32,4,P.blue,0,.6); R(2360,340,40,4,P.cubSeam,0,.5);
 
   var stripes = [P.st1,P.st2,P.st3,P.st4,P.st5,P.st6];
   for (var sx=2620, si=0; sx<3392; sx+=28, si++) R(sx,262,28,192,stripes[si%stripes.length]);
@@ -414,6 +399,10 @@ function buildScene(P){
     R(mx, baseY-mh, mw, mh, 'url(#gMon)', 3.5*s);
     if (lit){
       R(mx+3*s, baseY-mh+3*s, mw-6*s, mh-9*s, 'url(#gScreen)', 1.5*s);
+      if (s > .5){
+        for (var gr=1; gr<5; gr++) R(mx+5*s, baseY-mh+3*s+gr*(mh-9*s)/5, mw-10*s, 1*s, P.sheetLine, 0, .5);
+        for (var gc=1; gc<5; gc++) R(mx+3*s+gc*(mw-6*s)/5, baseY-mh+3*s, 1*s, mh-9*s, P.sheetLine, 0, .5);
+      }
       o.push('<g filter="url(#glow)" opacity="'+P.screenGlow+'"><rect x="'+n(mx+3*s)+'" y="'+n(baseY-mh+3*s)+'" width="'+n(mw-6*s)+'" height="'+n(mh-9*s)+'" fill="'+P.screen+'"/></g>');
       if (rnd()>.45) R(mx+3*s, baseY-mh+3*s, mw-6*s, 8*s, P.screenBar, 0, .8);
       R(mx+3*s, baseY-mh+3*s, (mw-6*s)*0.45, mh-9*s, 'url(#gSheen)');
@@ -444,7 +433,7 @@ function buildScene(P){
       for (var a=0;a<aisles.length;a++) if (Math.abs(mid - aisles[a]) < 74*s) gap = true;
       if (gap) continue;
 
-      var mw = 128*s, mh = 76*s, mx = x + (sp-mw)/2 + (rnd()-.5)*18*s, lit = rnd() > .46;
+      var mw = 128*s, mh = 76*s, mx = x + (sp-mw)/2 + (rnd()-.5)*18*s, lit = rnd() > .58;
 
       if (rnd() > (lite ? .68 : .5)) person(mx + mw/2 + (rnd()-.5)*46*s, y - mh - 2*s, s);
       monitor(mx, y, mw, mh, s, lit);
@@ -465,6 +454,12 @@ function buildScene(P){
       R(x, partY, sp-1.5, 2.5*s, P.cubHi, 0, .8);
       if (rnd() > .42) R(x+sp*0.12, partY+13*s, sp*0.6, partH-17*s, 'url(#gYellow)');
       if (rnd() > .8) R(x+sp*0.2, partY+22*s, 25*s, 25*s, pick([P.note1,P.note2,P.note3]), 1);
+      if (rnd() > .84){
+        R(x+sp*0.16, partY+18*s, sp*0.5, partH-26*s, P.board, 1.5*s);
+        R(x+sp*0.2, partY+26*s, sp*0.34, 3*s, P.accentRed, 0, .7);
+        R(x+sp*0.2, partY+36*s, sp*0.26, 3*s, P.blue, 0, .55);
+        R(x+sp*0.2, partY+46*s, sp*0.4, 3*s, P.cubSeam, 0, .5);
+      }
       if (rows[i].plates && rnd() > .45){
         R(x+sp*0.58, partY+28*s, 112*s, 38*s, P.blue, 2.5*s);
         R(x+sp*0.58, partY+28*s, 112*s, 13*s, 'url(#gSheen)', 2.5*s);
@@ -603,7 +598,7 @@ var DAY = {
   desk:"#E9E5DA", deskHi:"#F8F6EF", deskEdge:"#B9B2A1",
   chair:"#2B2B2E", chairHi:"#46464B", chairLo:"#171719", chairMesh:"#3A3A3F",
   monitor:"#24272B", monitorHi:"#3A3E43", monitorLo:"#141618", monitorVent:"#43484E",
-  screen:"#DDE8E4", screenHi:"#F2F7F4", screenBar:"#3E7FC1", screenGlow:"0.16",
+  screen:"#F0F4F1", screenHi:"#FFFFFF", screenBar:"#2E7D4F", screenGlow:"0.10", coolerJar:"#7FB8D8",
   skin:["#B98A64","#A9764F","#C79C74","#8E6340"], hair:"#241C16",
   shirt:["#4A5D75","#7C4A48","#3F6B55","#6A6A72","#8C6B3F","#57607A"],
   mug:"#EFE9DC", chai:"#B5762F", shadow:"#1E1810",
@@ -631,7 +626,7 @@ var NIGHT = {
   desk:"#28363C", deskHi:"#35464D", deskEdge:"#182329",
   chair:"#131719", chairHi:"#242B2E", chairLo:"#0B0E0F", chairMesh:"#1B2225",
   monitor:"#0C0F11", monitorHi:"#1B2226", monitorLo:"#060809", monitorVent:"#232B30",
-  screen:"#7FD6C2", screenHi:"#A8E8D9", screenBar:"#2E5F94", screenGlow:"0.5",
+  screen:"#8FD9C6", screenHi:"#B4E9DC", screenBar:"#2E5F94", screenGlow:"0.45", coolerJar:"#3E7A9A",
   skin:["#8A6549","#7C573B","#96725A","#6B4A31"], hair:"#15100C",
   shirt:["#33445A","#5A3332","#2C4F3E","#4A4A52","#63502F","#3E465C"],
   mug:"#A9A396", chai:"#8A5822", shadow:"#000000",
@@ -687,7 +682,6 @@ function tick(){
   if (inTea && !teaOn){ teaOn = true; teaRush(); }
   if (!inTea) teaOn = false;
 
-  autoLight(H);
 }
 /* started below, once the scene exists */
 
@@ -705,11 +699,9 @@ function paint(){
 }
 var chosen = false;
 try { var sv = localStorage.getItem("c78-theme"); if (sv){ root.setAttribute("data-theme", sv); chosen = true; } } catch(e){}
-function autoLight(H){
-  if (chosen || !root) return;
-  var want = (H >= 18 || H < 6) ? "dark" : "light";
-  if (root.getAttribute("data-theme") !== want){ root.setAttribute("data-theme", want); paint(); }
-}
+/* ट्यूबलाइट ११ बजे तक जलती रहती है — रोशनी घड़ी से नहीं बदलती */
+function autoLight(){ }
+if (!chosen) root.setAttribute("data-theme", "light");
 paint();
 tick(); setInterval(tick, 30000);
 $("#theme").addEventListener("click", function(){
@@ -785,32 +777,63 @@ document.querySelectorAll("[data-panel]").forEach(function(b){
 document.querySelectorAll("[data-close]").forEach(function(b){ b.addEventListener("click", closeAll); });
 document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeAll(); });
 
+var JOSH = [
+ "आज का नंबर कल की कहानी है",
+ "थक जाओ, रुको मत",
+ "मेहनत रजिस्टर में नहीं, नतीजे में दिखती है",
+ "जो जगह तुम्हारी है, वहाँ काम भी तुम्हारा है",
+ "शिफ़्ट ख़त्म होगी, आदत नहीं",
+ "जिस काम से डर लगे, उसे सबसे पहले निपटाओ",
+ "एक अच्छा दिन इत्तेफ़ाक़ है, लगातार अच्छे दिन आदत",
+ "जो गिनती अपने हाथ में है, ध्यान उसी पर रखो",
+ "धीरे चलो, पर रोज़ चलो",
+ "जो सीखा है आज, वही कल की ताक़त है",
+ "नज़र नतीजे पर, हाथ काम पर",
+ "आसान कभी नहीं था — फिर भी हम यहीं हैं",
+ "जो टीम साथ बैठती है, वो साथ जीतती है",
+ "अपना काम इतना अच्छा करो कि गिनना पड़े"
+];
+function joshNow(h){
+  if (h >= 14   && h < 14.5) return "नई शिफ़्ट, नया मौक़ा। शुरू करो।";
+  if (h >= 16.5 && h < 17)   return "चाय क़रीब है। एक काम और निपटा लो।";
+  if (h >= 17   && h < 17.5) return "चाय का टाइम। दस मिनट अपने लिए।";
+  if (h >= 22   && h < 23)   return "आख़िरी घंटा। यहीं से फ़र्क़ पड़ता है।";
+  if (h >= 23)               return "शिफ़्ट पूरी। अच्छा काम किया।";
+  return null;
+}
+var joshEl = null, joshI = -1, joshLast = "";
+function joshShow(t){
+  if (!joshEl) joshEl = $("#josh");
+  if (t === joshLast) return;
+  joshLast = t;
+  joshEl.classList.remove("on");
+  setTimeout(function(){ joshEl.textContent = t; joshEl.classList.add("on"); }, 700);
+}
+function joshTick(){
+  var d = new Date(), h = d.getHours() + d.getMinutes()/60, m = joshNow(h);
+  if (m){ joshShow(m); return; }
+  joshI = (joshI + 1) % JOSH.length;
+  joshShow(JOSH[joshI]);
+}
+
 /* notes + songs */
 var notes = [
  "दोपहर २ बजे का लॉगिन — और उससे ठीक पहले वाली आख़िरी नींद।",
  "५ बजे चाय। पूरे फ़्लोर की घड़ी उसी एक वक़्त पर सेट है।",
  "रात ११ बजे लॉग आउट, और बाहर निकलते ही वो ठंडी हवा।",
  "बाहर अँधेरा हो जाता है, पर अंदर वही ट्यूबलाइट वाली दोपहर चलती रहती है।",
- "मॉनिटर पर एक्सेल, और उसके पीछे छुपा हुआ गाना।",
- "ट्रॉफ़ी टीम को बहुत पहले मिली थी। धूल खा रही है, पर हटाता कोई नहीं।",
- "स्टील की बोतल, जो हर घंटे भरनी पड़ती है — और कूलर हमेशा दूसरे कोने में।",
- "ए.सी. की वो एक सीट, जिसके नीचे कोई बैठना नहीं चाहता।",
+ "मुश्किल काम पहले। बाक़ी दिन हल्का लगेगा।",
+ "जो शीट आज डरा रही है, अगले महीने वही आसान लगेगी।",
+ "ट्रॉफ़ी टीम को बहुत पहले मिली थी। धूल खा रही है, पर हटाता कोई नहीं — वो सबूत है कि हो सकता है।",
+ "नंबर गिरे तो देखो कहाँ, कोसो मत किसे।",
  "आख़िरी मेल भेजने के बाद वाली साँस।",
  "बैग कुर्सी पर टँगा है, मतलब बंदा अभी गया नहीं।",
- "कीबोर्ड की आवाज़ से पता चल जाता है कौन काम कर रहा है और कौन चैट।",
+ "जो नया आया है उसे सिखा दो। कल वही तुम्हारा सहारा है।",
  "११ बजे के बाद पार्किंग में वो दस मिनट, जो सबसे अच्छे होते हैं।"
 ];
-$("#notes").innerHTML = notes.map(function(t){ return '<div class="note">'+t+'</div>'; }).join("");
+if ($("#notes")) $("#notes").innerHTML = notes.map(function(t){ return '<div class="note">'+t+'</div>'; }).join("");
 
-var songs = [["कर हर मैदान फ़तह","सुल्तान"],["ज़िंदा","भाग मिल्खा भाग"],["चक दे इंडिया","चक दे! इंडिया"],
- ["कंधों से मिलते हैं कंधे","लक्ष्य"],["रूबरू","रंग दे बसंती"],["अपना टाइम आएगा","गली बॉय"],
- ["दंगल","दंगल"],["ये होसला","डोर"],["मंज़िलें अपनी जगह हैं","शराबी"],
- ["सपने जो देखे हैं","लक बाय चांस"],["यूँ ही चला चल","स्वदेस"],["हम होंगे कामयाब","पारंपरिक"]];
-$("#songs").innerHTML = songs.map(function(a){
-  return '<li><span>'+a[0]+'</span><span class="flm">'+a[1]+'</span>'+
-   '<a target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query='+
-   encodeURIComponent(a[0]+" "+a[1])+'">यूट्यूब</a></li>';
-}).join("");
+
 
 /* player */
 var audio = $("#audio"), list = [], idx = -1;
@@ -853,13 +876,14 @@ audio.volume = .85;
 $("#musicvol").addEventListener("input", function(e){ audio.volume = e.target.value/100; if (ytOn) yt.setVolume(+e.target.value); });
 function renderQueue(){
   var q = $("#queue");
+  if (!q) return;
   if (!list.length){ q.innerHTML = '<li style="cursor:default; color:var(--soft)">अभी कुछ नहीं लगा है।</li>'; return; }
   q.innerHTML = list.map(function(f,i){
     return '<li data-i="'+i+'" aria-current="'+(i===idx)+'"><span class="n">'+dev(i+1)+'</span><span>'+
       f.name.replace(/\.[^.]+$/,"")+'</span></li>';
   }).join("");
 }
-$("#queue").addEventListener("click", function(e){
+if ($("#queue")) $("#queue").addEventListener("click", function(e){
   var li = e.target.closest("li[data-i]"); if (li) load(+li.dataset.i, true);
 });
 function load(i, play){
@@ -885,13 +909,12 @@ function ytLoad(){
   $("#nowsub").textContent = "प्लेलिस्ट खुल रही है…";
   window.onYouTubeIframeAPIReady = function(){
     yt = new YT.Player("ytplayer", {
-      height:"145", width:"242",
+      height:"81", width:"144",
       playerVars:{ listType:"playlist", list:YT_PLAYLIST, autoplay:1, playsinline:1, rel:0, modestbranding:1 },
       events:{
         onReady: function(){
           ytOn = true;
           $("#ytbox").classList.add("on");
-          $("#ytfoot").textContent = "मोटिवेशनल गाने";
           yt.setVolume(+$("#musicvol").value);
           yt.playVideo();
           setInterval(ytName, 2000);
@@ -921,7 +944,7 @@ function ytName(){
     if (d && d.title){
       $("#nowtitle").textContent = d.title;
       var i = yt.getPlaylistIndex(), n = (yt.getPlaylist()||[]).length;
-      $("#nowsub").textContent = n ? ("यूट्यूब · "+dev(i+1)+" / "+dev(n)) : "यूट्यूब प्लेलिस्ट";
+      $("#nowsub").textContent = n ? ("गाना "+dev(i+1)+" / "+dev(n)) : "";
     }
   } catch(e){}
 }
@@ -1092,6 +1115,8 @@ function teaRush(){
 }
 
 /* go */
+joshTick(); setInterval(joshTick, 19000);
+
 $("#start").addEventListener("click", function(){
   try { startAmbience(); } catch(e){}
   try { if (YT_PLAYLIST) ytLoad(); else findSongs(); } catch(e){}
