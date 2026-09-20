@@ -12,18 +12,24 @@
   --ink:#241F17; --soft:#5F5749; --glass:rgba(248,246,240,.9); --edge:rgba(40,32,18,.16);
   --blue:#2C4E9B; --orange:#D9541F; --mustard:#D9A518; --bg:#DCD7CA;
   --pop:#FFFFFF; --shadow:0 14px 40px rgba(40,32,14,.22); --joshglow:rgba(250,248,240,.95);
+  --plate:#2C4E9B; --plateInk:#FFFFFF; --paper:#FBFAF3; --paperInk:#241F17; --tape:rgba(214,205,180,.75);
+  --laminate:#F4F1E8; --laminateEdge:#BDB5A2;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --ink:#E7EEEA; --soft:#93A7A4; --glass:rgba(16,26,31,.86); --edge:rgba(160,200,200,.18);
     --blue:#5D89D6; --orange:#E67A3C; --mustard:#D9AD36; --bg:#0D1519;
     --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6); --joshglow:rgba(6,12,15,.95);
+    --plate:#22407E; --plateInk:#E9EFF8; --paper:#1B272D; --paperInk:#E7EEEA; --tape:rgba(120,140,140,.35);
+    --laminate:#202E34; --laminateEdge:#0F181C;
   }
 }
 :root[data-theme="dark"]{
   --ink:#E7EEEA; --soft:#93A7A4; --glass:rgba(16,26,31,.86); --edge:rgba(160,200,200,.18);
   --blue:#5D89D6; --orange:#E67A3C; --mustard:#D9AD36; --bg:#0D1519;
   --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6); --joshglow:rgba(6,12,15,.95);
+    --plate:#22407E; --plateInk:#E9EFF8; --paper:#1B272D; --paperInk:#E7EEEA; --tape:rgba(120,140,140,.35);
+    --laminate:#202E34; --laminateEdge:#0F181C;
 }
 
 *{box-sizing:border-box}
@@ -47,7 +53,7 @@ button{font-family:'Hind',sans-serif}
   background:radial-gradient(130% 92% at 50% 44%, transparent 42%, rgba(20,14,4,.36) 100%)}
 #prog{position:absolute; top:0; left:0; right:0; height:3px; z-index:20; background:var(--edge)}
 #prog i{display:block; height:100%; width:0; background:var(--orange); transition:width 30s linear}
-#prog b{position:absolute; top:0; left:33.33%; width:2px; height:3px; background:var(--mustard)}
+#prog b.mark{position:absolute; top:0; width:3px; height:3px; background:var(--mustard)}
 .shift{cursor:default; background:var(--pop)}
 .shift.tea{background:var(--mustard); border-color:var(--mustard); color:#241A05; font-weight:600}
 #grain{position:absolute; inset:0; pointer-events:none; opacity:.06; mix-blend-mode:overlay;
@@ -56,7 +62,12 @@ button{font-family:'Hind',sans-serif}
 /* ---------- chrome ---------- */
 .bar{position:absolute; left:0; right:0; z-index:10; padding:.5rem max(12px, env(safe-area-inset-left));
   display:flex; align-items:center; gap:.5rem}
-.bar.top{top:0; background:linear-gradient(var(--glass), transparent); backdrop-filter:blur(3px)}
+.bar.top{top:0; background:color-mix(in srgb, var(--plate) 92%, transparent); color:var(--plateInk);
+  border-bottom:3px solid var(--mustard); backdrop-filter:blur(6px); box-shadow:0 6px 18px rgba(0,0,0,.2)}
+.bar.top .pill{background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.35); color:var(--plateInk)}
+.bar.top .pill:hover{background:rgba(255,255,255,.22); border-color:#fff}
+.brand b{display:inline-block; background:#fff; color:var(--plate); font-family:'Rozha One',serif;
+  padding:0 .42rem; border-radius:2px; margin-left:.35rem}
 .brand{font-family:'Rozha One',serif; font-size:1.35rem; white-space:nowrap; margin-right:.2rem}
 .spacer{flex:1}
 #clock{font-family:'Rozha One',serif; font-size:1.2rem; white-space:nowrap}
@@ -67,25 +78,34 @@ button{font-family:'Hind',sans-serif}
 .jump{position:absolute; top:3.1rem; left:0; right:0; z-index:10; display:flex; gap:.35rem;
   overflow-x:auto; padding:0 max(12px, env(safe-area-inset-left)); scrollbar-width:none}
 .jump::-webkit-scrollbar{display:none}
-.jump .pill{flex:none}
+.jump .pill{flex:none; background:var(--laminate); border:1px solid var(--laminateEdge);
+  border-bottom:3px solid var(--mustard); border-radius:0 0 6px 6px; color:var(--ink)}
+.jump .pill:hover{border-bottom-color:var(--orange)}
 
-.josh{position:absolute; top:5.6rem; left:50%; transform:translateX(-50%); z-index:9;
-  font-family:'Rozha One',serif; font-size:clamp(1.15rem,2.6vw,1.9rem); color:var(--ink);
-  text-align:center; max-width:min(620px,88vw); pointer-events:none; opacity:0;
-  transition:opacity 1.6s ease; text-shadow:0 2px 16px var(--joshglow), 0 1px 4px var(--joshglow)}
-.josh.on{opacity:.95}
-@media (max-width:640px){ .josh{top:5rem} }
+.josh{position:absolute; top:5.4rem; left:50%; transform:translateX(-50%) rotate(-.7deg); z-index:9;
+  font-family:'Rozha One',serif; font-size:clamp(1.1rem,2.5vw,1.85rem); line-height:1.25;
+  color:#241F17; background:#FCFAF1; text-align:center; max-width:min(560px,86vw);
+  padding:.55rem 1.6rem .7rem; pointer-events:none; opacity:0; transition:opacity 1.4s ease;
+  box-shadow:0 10px 26px rgba(40,30,10,.26); border:1px solid rgba(0,0,0,.08)}
+.josh::before, .josh::after{content:""; position:absolute; top:-10px; width:54px; height:20px;
+  background:var(--tape); transform:rotate(-4deg)}
+.josh::before{left:-14px}
+.josh::after{right:-14px; transform:rotate(4deg)}
+.josh.on{opacity:1}
+@media (max-width:640px){ .josh{top:4.9rem; font-size:1rem; padding:.45rem 1rem .55rem} }
 .hint{position:absolute; left:50%; bottom:8.5rem; transform:translateX(-50%); z-index:9;
   background:rgba(22,16,6,.7); color:#F6F2E8; padding:.28rem 1rem; border-radius:999px;
   font-size:.88rem; pointer-events:none; transition:opacity .5s ease}
 
 /* ---------- dock ---------- */
-.dock{position:absolute; left:0; right:0; bottom:0; z-index:12; background:var(--glass);
-  border-top:1px solid var(--edge); backdrop-filter:blur(14px);
+.dock{position:absolute; left:0; right:0; bottom:0; z-index:12; background:var(--laminate);
+  border-top:4px solid var(--laminateEdge); box-shadow:0 -1px 0 rgba(255,255,255,.5) inset, 0 -10px 30px rgba(0,0,0,.18);
   padding:.55rem max(12px, env(safe-area-inset-left)) calc(.55rem + env(safe-area-inset-bottom));
   display:flex; align-items:center; gap:.6rem; flex-wrap:wrap}
-.key{background:var(--pop); border:1px solid var(--edge); border-radius:7px; padding:.34rem .8rem;
-  cursor:pointer; color:var(--ink); font-weight:600; font-size:.9rem}
+.key{background:linear-gradient(#fdfcf8,#e6e1d4); border:1px solid var(--laminateEdge); border-radius:6px;
+  padding:.34rem .8rem; cursor:pointer; color:#231F17; font-weight:600; font-size:.9rem;
+  box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.key:active{transform:translateY(2px); box-shadow:none}
 .key:hover{border-color:var(--orange)}
 .key.big{background:var(--orange); border-color:var(--orange); color:#FFF6F0}
 .reel{width:30px; height:30px; flex:none}
@@ -106,10 +126,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:15px; hei
 input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; background:var(--orange); border:0; cursor:pointer}
 
 /* ---------- panels ---------- */
-.panel{position:absolute; z-index:11; left:max(12px, env(safe-area-inset-left)); bottom:4.2rem;
+.panel{position:absolute; z-index:11; left:max(12px, env(safe-area-inset-left)); bottom:4.6rem;
   width:min(440px, calc(100vw - 24px)); max-height:min(56vh, 460px); overflow-y:auto;
-  background:var(--glass); backdrop-filter:blur(16px); border:1px solid var(--edge);
-  border-radius:14px; box-shadow:var(--shadow); padding:1rem 1.05rem 1.1rem; display:none}
+  background:var(--paper); color:var(--paperInk); border:1px solid var(--laminateEdge);
+  border-left:5px solid var(--mustard); border-radius:2px; box-shadow:var(--shadow);
+  padding:1.2rem 1.05rem 1.1rem; display:none}
+.panel::before{content:""; position:absolute; top:-9px; left:50%; width:62px; height:18px;
+  transform:translateX(-50%) rotate(-2deg); background:var(--tape)}
 .panel.on{display:block}
 .panel h2{font-size:1.5rem; margin-bottom:.3rem}
 .panel .lede{color:var(--soft); font-size:.92rem; margin-bottom:.8rem}
@@ -141,7 +164,7 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
 .note:nth-child(3n+3){background:#EFC8A0}
 
 #frame{position:relative; height:100%; display:inline-block; line-height:0}
-.ytbox{position:absolute; left:55.12%; top:33.22%; width:5.53%; height:11.56%;
+.ytbox{position:absolute; left:43.71%; top:33.22%; width:5.53%; height:11.56%;
   background:#000; overflow:hidden; display:none; line-height:0}
 .ytbox.on{display:block}
 .ytbox iframe{width:100%; height:100%; border:0; display:block}
@@ -183,12 +206,12 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
      </div>
   </div>
   <div id="vig"></div>
-  <div id="prog"><i id="progfill"></i><b id="progtea"></b></div>
+  <div id="prog"><i id="progfill"></i><b class="mark" style="left:33.33%"></b><b class="mark" style="left:88.89%"></b></div>
   <div id="grain"></div>
 </div>
 
 <div class="bar top">
-  <span class="brand">क्यूबिकल ७८</span>
+  <span class="brand">क्यूबिकल<b>७८</b></span>
   <span class="spacer"></span>
   <span id="clock">००:००</span>
   <span class="pill shift" id="shift">—</span>
@@ -197,11 +220,11 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
 </div>
 
 <div class="jump" id="jump">
-  <button class="pill" data-x="0.08">मेरी डेस्क</button>
-  <button class="pill" data-x="0.28">कुर्सियों की क़तार</button>
-  <button class="pill" data-x="0.49">दीवार पे लिखा है</button>
-  <button class="pill" data-x="0.60">टी.वी. वाला कोना</button>
-  <button class="pill" data-x="0.80">बग़ल वाला ७७</button>
+  <button class="pill" data-x="0.13">बग़ल वाला ७७</button>
+  <button class="pill" data-x="0.39">दीवार पे लिखा है</button>
+  <button class="pill" data-x="0.44">मेरी सीट ७८</button>
+  <button class="pill" data-x="0.66">नोटिस बोर्ड</button>
+  <button class="pill" data-x="0.80">आगे की क़तार</button>
   <button class="pill" data-x="0.95">रंगीन दीवार</button>
 </div>
 
@@ -217,6 +240,7 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
     <button class="pill" data-preset="day">शुरुआत · २ बजे</button>
     <button class="pill" data-preset="night">रात · ११ तक</button>
     <button class="pill" data-preset="tea">चाय · ५ बजे</button>
+    <button class="pill" id="callTrolley">ट्रॉली बुलाओ</button>
     <button class="pill" data-preset="quiet">सन्नाटा</button>
   </div>
 </div>
@@ -237,6 +261,7 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
   <div class="vol"><span>आवाज़</span><input type="range" id="musicvol" min="0" max="100" value="85" aria-label="गाने की आवाज़"></div>
   <label class="file">गाने चुनो<input type="file" id="files" accept="audio/*" multiple></label>
   <span class="spacer"></span>
+  <button class="pill" id="moreJosh">और एक लाइन</button>
   <button class="pill" data-panel="p-mix">फ़्लोर की आवाज़</button>
   <button class="pill" data-panel="p-notes">यादें</button>
 </div>
@@ -256,7 +281,8 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
 /* ===== Arista floor panorama v2 — lit, shaded, depth-of-field ===== */
 var SCENE_W = 3400, SCENE_H = 900;
 
-function buildScene(P){
+function buildScene(P, occ){
+  if (occ == null) occ = 1;
   var seed = 20260918;
   function rnd(){ seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
   function pick(a){ return a[Math.floor(rnd()*a.length)]; }
@@ -294,17 +320,23 @@ function buildScene(P){
     '<filter id="dof2" x="-3%" y="-6%" width="106%" height="112%"><feGaussianBlur stdDeviation="1.5"/></filter>' +
     '<filter id="dof1" x="-3%" y="-6%" width="106%" height="112%"><feGaussianBlur stdDeviation="0.7"/></filter>' +
     '<filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6"/></filter>' +
+    '<filter id="haze" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="26"/></filter>' +
   '</defs>');
 
   /* ================= ceiling ================= */
-  o.push('<g filter="url(#dof1)">');
-  R(0,0,SCENE_W,268,'url(#gCeil)');
-  R(0,142,SCENE_W,26,P.ceilBand); R(0,142,SCENE_W,3,P.ceilHi);
-  R(0,210,SCENE_W,15,P.ceilBand); R(0,210,SCENE_W,2,P.ceilHi);
+  o.push('<g id="lyrCeil"><g filter="url(#dof1)">');
+  R(-420,0,SCENE_W+840,268,'url(#gCeil)');
+  R(-420,142,SCENE_W+840,26,P.ceilBand); R(-420,142,SCENE_W+840,3,P.ceilHi);
+  R(-420,210,SCENE_W+840,15,P.ceilBand); R(-420,210,SCENE_W+840,2,P.ceilHi);
+  // duct run, cable tray and sprinklers break up the grid
+  R(-420,176,SCENE_W+840,22,P.duct); R(-420,176,SCENE_W+840,5,P.ductHi,0,.7);
+  for (var dv=-400; dv<SCENE_W+420; dv+=34) R(dv,182,16,10,P.ductVent,1,.5);
+  R(-420,232,SCENE_W+840,6,P.tray,0,.8);
+  for (var spk=-380; spk<SCENE_W+400; spk+=196){ C(spk,244,4,P.steelLo,.85); C(spk,241,2,P.ceilHi,.6); }
   var tiers = [[20,132,32,272],[96,100,23,216],[154,76,16,172],[198,57,12,140],[230,44,9,116]];
   for (var t=0;t<tiers.length;t++){
     var ly=tiers[t][0], lw=tiers[t][1], lh=tiers[t][2], lsp=tiers[t][3];
-    for (var lx=-50; lx<SCENE_W+90; lx+=lsp){
+    for (var lx=-400; lx<SCENE_W+420; lx+=lsp){
       if (rnd() > .03){
         o.push('<g filter="url(#lamp)" opacity="'+P.lampGlow+'"><rect x="'+n(lx-9)+'" y="'+n(ly-7)+'" width="'+n(lw+18)+'" height="'+n(lh+14)+'" rx="8" fill="'+P.light+'"/></g>');
         R(lx,ly,lw,lh,'url(#gLight)',3);
@@ -312,12 +344,18 @@ function buildScene(P){
       R(lx,ly+lh-1.5,lw,1.5,P.ceilBand,0,.5);
     }
   }
-  o.push('</g>');
+  // the one tube on floor 2 that never stops flickering
+  o.push('<rect id="flick" x="1284" y="20" width="132" height="32" rx="3" fill="'+P.light+'"/>');
+  // projector hanging over the far rows
+  o.push('<g transform="translate(2040 226)"><rect x="-4" y="-48" width="8" height="48" fill="'+P.steelLo+'"/>'+
+    '<rect x="-30" y="0" width="60" height="26" rx="4" fill="'+P.projector+'"/>'+
+    '<circle cx="22" cy="13" r="7" fill="'+P.projectorLens+'"/></g>');
+  o.push('</g></g>');
 
   /* ================= back wall ================= */
-  o.push('<g filter="url(#dof3)">');
-  R(0,262,SCENE_W,192,'url(#gWall)');
-  R(0,262,SCENE_W,4,P.ceilBand);
+  o.push('<g id="lyrWall"><g filter="url(#dof3)">');
+  R(-420,262,SCENE_W+840,192,'url(#gWall)');
+  R(-420,262,SCENE_W+840,4,P.ceilBand);
 
   for (var gx=40; gx<1020; gx+=244){
     R(gx,286,222,150,P.frame,2);
@@ -330,26 +368,38 @@ function buildScene(P){
   Pth('M120 300 q24 -18 48 0 q24 18 48 0 l0 20 q-24 18 -48 0 q-24 -18 -48 0 z', P.accentRed,null,null,.9);
   R(120,326,96,7,P.accentRed,1,.85); R(120,340,72,7,P.accentRed,1,.7);
 
-  R(1090,282,162,172,P.doorFrame,2);
-  R(1098,290,146,164,P.door);
-  R(1098,290,10,164,P.doorHi,0,.5);
+  R(1020,282,162,172,P.doorFrame,2);
+  R(1028,290,146,164,P.door);
+  R(1028,290,10,164,P.doorHi,0,.5);
 
-  R(1530,286,248,152,P.orange,2);
-  R(1530,286,248,52,'url(#gSheen)',2);
+  R(1196,286,236,152,P.orange,2);
+  R(1196,286,236,52,'url(#gSheen)',2);
   var mot = ['THE PLACE','YOU BELONG TO','HAS A LOT','TO DO'];
   for (var m=0;m<mot.length;m++)
-    o.push('<text x="1654" y="'+(330+m*27)+'" text-anchor="middle" font-family="Hind, sans-serif" font-size="21" font-weight="600" letter-spacing="1" fill="'+P.orangeInk+'">'+mot[m]+'</text>');
+    o.push('<text x="1314" y="'+(330+m*27)+'" text-anchor="middle" font-family="Hind, sans-serif" font-size="21" font-weight="600" letter-spacing="1" fill="'+P.orangeInk+'">'+mot[m]+'</text>');
 
-  R(1866,292,204,118,P.tvFrame,5);
-  R(1874,299,188,104,P.tv);
-  R(1874,299,188,36,'url(#gSheen)');
-  R(1956,410,22,13,P.tvFrame);
+  R(1478,292,204,118,P.tvFrame,5);
+  R(1486,299,188,104,P.tv);
+  R(1486,299,188,36,'url(#gSheen)');
+  R(1568,410,22,13,P.tvFrame);
 
   R(2178,294,160,110,P.boardFrame,2);
   R(2184,300,148,98,P.board);
   for (var nb=0;nb<6;nb++) R(2192+(nb%3)*48, 308+Math.floor(nb/3)*48, 40, 40, pick([P.note1,P.note2,P.note3]), 1, .95);
 
+  // wall clock
+  o.push('<g transform="translate(1800 340)">'+
+    '<circle r="38" fill="'+P.clockFace+'" stroke="'+P.clockRim+'" stroke-width="5"/>'+
+    '<circle r="30" fill="none" stroke="'+P.clockRim+'" stroke-width="1" opacity=".35"/>');
+  for (var ci=0; ci<12; ci++){
+    var ca = ci*30*Math.PI/180;
+    o.push('<rect x="-1.6" y="-30" width="3.2" height="'+(ci%3?5:8)+'" fill="'+P.clockInk+'" transform="rotate('+(ci*30)+')" opacity="'+(ci%3?.5:.9)+'"/>');
+  }
+  o.push('<g id="clkH"><rect x="-2.2" y="-19" width="4.4" height="21" rx="2" fill="'+P.clockInk+'"/></g>'+
+    '<g id="clkM"><rect x="-1.6" y="-27" width="3.2" height="29" rx="1.6" fill="'+P.clockInk+'"/></g>'+
+    '<circle r="3" fill="'+P.accentRed+'"/></g>');
   R(2430,372,20,58,P.accentRed,5); R(2435,362,10,12,P.steelLo);
+  
   // water cooler
   R(2490,366,54,86,P.ac,4); R(2490,366,18,86,'url(#gSheen)',4);
   R(2500,318,34,48,P.coolerJar,6); R(2506,312,22,10,P.steelLo,3);
@@ -358,10 +408,24 @@ function buildScene(P){
   R(2350,300,66,96,P.boardFrame,2); R(2354,304,58,88,P.board);
   R(2360,316,44,4,P.accentRed,0,.7); R(2360,328,32,4,P.blue,0,.6); R(2360,340,40,4,P.cubSeam,0,.5);
 
+  // पीला कॉलम, रंगीन दीवार के ठीक पहले
+  R(2548,262,66,192,P.colYellow);
+  R(2548,262,16,192,'url(#gSheen)');
+  R(2548,262,66,8,P.ceilBand);
+
   var stripes = [P.st1,P.st2,P.st3,P.st4,P.st5,P.st6];
   for (var sx=2620, si=0; sx<3392; sx+=28, si++) R(sx,262,28,192,stripes[si%stripes.length]);
   R(2620,262,772,192,'url(#gSheen)');
   R(2620,262,772,9,P.ceilBand);
+
+  var bulbCols = [P.bulbA,P.bulbB,P.bulbC,P.bulbD];
+  for (var wseg=0; wseg<SCENE_W; wseg+=180){
+    Pth('M'+wseg+' 272 q90 26 180 0', null, P.wire, 2.2, .75);
+    for (var bi=1; bi<5; bi++){
+      var bt = bi/5, bx = wseg + 180*bt, by = 272 + 52*bt*(1-bt);
+      C(bx, by+4, 4.4, bulbCols[(wseg/180+bi)%4], .95);
+    }
+  }
 
   R(2760,272,178,46,P.ac,5);
   R(2760,272,178,14,P.acHi,5,.7);
@@ -370,11 +434,15 @@ function buildScene(P){
     '<circle r="47" fill="'+P.fanBack+'"/><circle r="47" fill="none" stroke="'+P.steelLo+'" stroke-width="3"/>'+
     '<g class="fanblades"><ellipse rx="34" ry="12" fill="'+P.fan+'"/><ellipse rx="34" ry="12" fill="'+P.fan+'" transform="rotate(60)"/><ellipse rx="34" ry="12" fill="'+P.fan+'" transform="rotate(120)"/></g>'+
     '<circle r="9" fill="'+P.steelLo+'"/></g>');
-  o.push('</g>');
+  o.push('</g></g>');
 
   /* ================= floor ================= */
   R(0,448,SCENE_W,452,'url(#gFloor)');
   for (var px=60; px<SCENE_W; px+=250) E(px,720,150,54,'url(#gPool)');
+  o.push('<g filter="url(#haze)" opacity="'+P.shaft+'">');
+  for (var bx2=150; bx2<SCENE_W; bx2+=430)
+    Pth('M'+(bx2-60)+' 60 L'+(bx2+60)+' 60 L'+(bx2+210)+' 830 L'+(bx2-210)+' 830 z', P.light, null, null, 1);
+  o.push('</g>');
 
   /* ================= cubicle rows ================= */
   var rows = [
@@ -386,8 +454,9 @@ function buildScene(P){
   ];
   var aisles = [948, 2116, 3010];
 
-  function person(hx, baseY, s){
+  function person(hx, baseY, s, lean){
     var hr = 16*s, hy = baseY - 34*s;
+    if (lean){ hy -= 10*s; hx += 6*s; }
     Pth('M'+n(hx-38*s)+' '+n(baseY+6*s)+' q'+n(2*s)+' '+n(-30*s)+' '+n(38*s)+' '+n(-30*s)+
         ' q'+n(36*s)+' 0 '+n(38*s)+' '+n(30*s)+' z', pick(P.shirt));
     R(hx-6*s, hy+hr*0.5, 12*s, 12*s, pick(P.skin));
@@ -416,6 +485,37 @@ function buildScene(P){
     }
   }
 
+  function walkFig(k, shirt, skin){
+    var g = [];
+    g.push('<ellipse cx="0" cy="'+(6*k)+'" rx="'+(30*k)+'" ry="'+(7*k)+'" fill="'+P.shadow+'" opacity=".22"/>');
+    g.push('<path d="M'+(-9*k)+' '+(-2*k)+' l'+(-11*k)+' '+(4*k)+' l'+(4*k)+' '+(6*k)+' l'+(14*k)+' '+(-5*k)+' z" fill="'+P.trouser+'"/>');
+    g.push('<path d="M'+(7*k)+' '+(-2*k)+' l'+(12*k)+' '+(3*k)+' l'+(-3*k)+' '+(7*k)+' l'+(-14*k)+' '+(-4*k)+' z" fill="'+P.trouser+'"/>');
+    g.push('<rect x="'+(-11*k)+'" y="'+(-46*k)+'" width="'+(22*k)+'" height="'+(46*k)+'" rx="'+(7*k)+'" fill="'+P.trouser+'"/>');
+    g.push('<path d="M'+(-15*k)+' '+(-46*k)+' q'+(15*k)+' '+(-13*k)+' '+(30*k)+' 0 l0 '+(30*k)+' l'+(-30*k)+' 0 z" fill="'+shirt+'"/>');
+    g.push('<rect x="'+(13*k)+'" y="'+(-44*k)+'" width="'+(7*k)+'" height="'+(28*k)+'" rx="'+(3.5*k)+'" fill="'+shirt+'"/>');
+    g.push('<rect x="'+(-4*k)+'" y="'+(-58*k)+'" width="'+(8*k)+'" height="'+(10*k)+'" fill="'+skin+'"/>');
+    g.push('<ellipse cx="0" cy="'+(-66*k)+'" rx="'+(11*k)+'" ry="'+(12*k)+'" fill="'+skin+'"/>');
+    g.push('<path d="M'+(-11*k)+' '+(-68*k)+' q'+(11*k)+' '+(-16*k)+' '+(22*k)+' 0 q'+(-7*k)+' '+(-5*k)+' '+(-22*k)+' 0 z" fill="'+P.hair+'"/>');
+    return g.join('');
+  }
+
+  function trolleyFig(k){
+    var g = [];
+    g.push('<ellipse cx="0" cy="'+(4*k)+'" rx="'+(52*k)+'" ry="'+(8*k)+'" fill="'+P.shadow+'" opacity=".24"/>');
+    g.push('<rect x="'+(-46*k)+'" y="'+(-58*k)+'" width="'+(92*k)+'" height="'+(8*k)+'" rx="'+(3*k)+'" fill="'+P.steelLo+'"/>');
+    g.push('<rect x="'+(-46*k)+'" y="'+(-24*k)+'" width="'+(92*k)+'" height="'+(8*k)+'" rx="'+(3*k)+'" fill="'+P.steelLo+'"/>');
+    g.push('<rect x="'+(-42*k)+'" y="'+(-50*k)+'" width="'+(6*k)+'" height="'+(50*k)+'" fill="'+P.steelLo+'"/>');
+    g.push('<rect x="'+(36*k)+'" y="'+(-50*k)+'" width="'+(6*k)+'" height="'+(50*k)+'" fill="'+P.steelLo+'"/>');
+    g.push('<circle cx="'+(-32*k)+'" cy="0" r="'+(7*k)+'" fill="'+P.chair+'"/>');
+    g.push('<circle cx="'+(30*k)+'" cy="0" r="'+(7*k)+'" fill="'+P.chair+'"/>');
+    g.push('<path d="M'+(-26*k)+' '+(-58*k)+' l'+(4*k)+' '+(-30*k)+' l'+(40*k)+' 0 l'+(4*k)+' '+(30*k)+' z" fill="'+P.kettle+'"/>');
+    g.push('<rect x="'+(-8*k)+'" y="'+(-96*k)+'" width="'+(16*k)+'" height="'+(8*k)+'" rx="'+(3*k)+'" fill="'+P.steelHi+'"/>');
+    g.push('<path d="M'+(18*k)+' '+(-80*k)+' q'+(16*k)+' '+(8*k)+' '+(2*k)+' '+(18*k)+'" fill="none" stroke="'+P.kettle+'" stroke-width="'+(5*k)+'"/>');
+    for (var cu=0; cu<4; cu++)
+      g.push('<rect x="'+((-40+cu*20)*k)+'" y="'+(-40*k)+'" width="'+(14*k)+'" height="'+(16*k)+'" rx="'+(2*k)+'" fill="'+P.mug+'"/>');
+    return g.join('');
+  }
+
   function chair(cx, topY, cw, s){
     var h = 66*s;
     E(cx+cw/2, topY+h+14*s, cw*0.5, 7*s, P.shadow, .22);
@@ -435,11 +535,21 @@ function buildScene(P){
     for (var x = -sp; x < SCENE_W + sp; x += sp){
       var mid = x + sp/2, gap = false;
       for (var a=0;a<aisles.length;a++) if (Math.abs(mid - aisles[a]) < 74*s) gap = true;
-      if (gap) continue;
+      if (gap){
+        if (!lite && rnd() > .55){
+          var sy = partY + partH - 4*s;
+          E(mid, sy + 8*s, 26*s, 6*s, P.shadow, .22);
+          Pth('M'+n(mid-20*s)+' '+n(sy)+' q'+n(2*s)+' '+n(-58*s)+' '+n(20*s)+' '+n(-58*s)+
+              ' q'+n(18*s)+' 0 '+n(20*s)+' '+n(58*s)+' z', pick(P.shirt));
+          E(mid, sy - 72*s, 15*s, 17*s, pick(P.skin));
+          Pth('M'+n(mid-15*s)+' '+n(sy-74*s)+' q'+n(15*s)+' '+n(-27*s)+' '+n(30*s)+' 0 z', P.hair);
+        }
+        continue;
+      }
 
-      var mw = 128*s, mh = 76*s, mx = x + (sp-mw)/2 + (rnd()-.5)*18*s, lit = rnd() > .58;
+      var mw = 128*s, mh = 76*s, mx = x + (sp-mw)/2 + (rnd()-.5)*18*s, lit = rnd() < 0.42 * (0.3 + 0.7*occ);
 
-      if (rnd() > (lite ? .68 : .5)) person(mx + mw/2 + (rnd()-.5)*46*s, y - mh - 2*s, s);
+      if (rnd() < (lite ? .32 : .5) * (0.18 + 0.82*occ)) person(mx + mw/2 + (rnd()-.5)*46*s, y - mh - 2*s, s, rnd() > .78);
       monitor(mx, y, mw, mh, s, lit);
 
       R(x, y, sp, deskH, 'url(#gDesk)');
@@ -451,6 +561,9 @@ function buildScene(P){
         if (q > .72){ R(x+28*s, y-30*s, 13*s, 30*s, 'url(#gSteel)', 4*s); E(x+34.5*s, y, 8*s, 3*s, P.shadow, .25); }
         else if (q > .6){ E(x+34*s, y-4*s, 10*s, 4*s, P.shadow, .22); R(x+26*s, y-20*s, 17*s, 18*s, P.mug, 3*s); }
         else if (q > .48) R(x+24*s, y-19*s, 24*s, 19*s, pick([P.note1,P.note2,P.note3]), 1);
+        else if (q > .38){ R(x+22*s, y-26*s, 30*s, 26*s, P.frameHi, 2*s); R(x+26*s, y-22*s, 22*s, 18*s, pick(P.shirt)); }
+        else if (q > .30){ R(x+24*s, y-20*s, 26*s, 20*s, P.tiffin, 4*s); R(x+24*s, y-13*s, 26*s, 3*s, P.steelLo); }
+        else if (q > .24){ R(x+20*s, y-18*s, 34*s, 18*s, P.cakeBox, 2*s); R(x+20*s, y-12*s, 34*s, 3*s, P.note2); }
       }
 
       R(x, partY, sp-1.5, partH, 'url(#gPart)');
@@ -473,11 +586,17 @@ function buildScene(P){
 
       if (rnd() > .4){
         var cw = 132*s, cx2 = x + (sp-cw)/2 + (rnd()-.5)*24*s;
+        var tilt = (rnd()-.5)*7;
+        o.push('<g transform="rotate('+n(tilt)+' '+n(cx2+cw/2)+' '+n(partY+40*s)+')">');
         chair(cx2, partY + 8*s, cw, s);
+        o.push('</g>');
         if (rnd() > .74) R(cx2+cw*0.2, partY+4*s, cw*0.58, 44*s, pick(P.bags), 11*s);
       }
     }
     if (rows[i].blur) o.push('</g>');
+
+    if (i === 2) o.push('<g id="walker">'+ walkFig(0.62, pick(P.shirt), pick(P.skin)) +'</g>');
+    if (i === 3) o.push('<g id="trolley" opacity="0">'+ trolleyFig(0.86) +'</g>');
   }
 
   /* ================= foreground: my own desk ================= */
@@ -492,8 +611,8 @@ function buildScene(P){
     R(x+118, 730, 40, 46, P.plate, 2);
     o.push('<text x="'+(x+138)+'" y="765" text-anchor="middle" font-family="Rozha One, serif" font-size="29" fill="'+P.blueInk+'">'+num+'</text>');
   }
-  plate(556, '७८');
-  plate(1672, '७७');
+  plate(430, '७७');
+  plate(1500, '७८');
 
   function plant(x, y, k){
     E(x, y+32*k, 34*k, 9*k, P.shadow, .25);
@@ -602,7 +721,7 @@ var DAY = {
   desk:"#E9E5DA", deskHi:"#F8F6EF", deskEdge:"#B9B2A1",
   chair:"#2B2B2E", chairHi:"#46464B", chairLo:"#171719", chairMesh:"#3A3A3F",
   monitor:"#24272B", monitorHi:"#3A3E43", monitorLo:"#141618", monitorVent:"#43484E",
-  screen:"#F0F4F1", screenHi:"#FFFFFF", screenBar:"#2E7D4F", screenGlow:"0.10", coolerJar:"#7FB8D8",
+  screen:"#F0F4F1", screenHi:"#FFFFFF", screenBar:"#2E7D4F", screenGlow:"0.10", coolerJar:"#7FB8D8", duct:"#D3D2C9", ductHi:"#EDECE4", ductVent:"#B4B3AA", tray:"#BDBCB3", projector:"#E6E4DB", projectorLens:"#5A6B72", clockFace:"#F7F5EE", clockRim:"#6E6A60", clockInk:"#2A2820",
   skin:["#B98A64","#A9764F","#C79C74","#8E6340"], hair:"#241C16",
   shirt:["#4A5D75","#7C4A48","#3F6B55","#6A6A72","#8C6B3F","#57607A"],
   mug:"#EFE9DC", chai:"#B5762F", shadow:"#1E1810",
@@ -611,7 +730,10 @@ var DAY = {
   docPaper:"#CBAE87", docInk:"#6E5631", sheet:"#FAFAF6", sheetLine:"#C7CDC7", sheetHead:"#2E7D4F", sheetSel:"#5B9BD5",
   keyboard:"#232323", keycap:"#3A3A38", mousepad:"#28383F", mouse:"#2E2E2C",
   lanyard:"#2C4E9B", bagTeal:"#2E93B8", bagGrey:"#6E6E70", bagShade:"#00000033",
-  bags:["#2E93B8","#7C4A48","#3F6B55","#6A6A72","#B4574F"]
+  bags:["#2E93B8","#7C4A48","#3F6B55","#6A6A72","#B4574F"],
+  bulbA:"#E8553F", bulbB:"#E9B02A", bulbC:"#3F8F5E", bulbD:"#3A6FB0", wire:"#8A8479",
+  clockFace:"#FBFAF4", clockRim:"#4A4740", clockHand:"#22201B",
+  shaft:"0.05", trouser:"#39404C", tiffin:"#C9CDD2", cakeBox:"#EFE3D2", kettle:"#B8BDC2", colYellow:"#F0C23C"
 };
 var NIGHT = {
   ceil:"#121C21", ceilHi:"#1A262C", ceilBand:"#0C1418", light:"#DCEFE6", lightWarm:"#C2DCD2", lightOff:"#18222700", lampGlow:"0.8",
@@ -630,7 +752,7 @@ var NIGHT = {
   desk:"#28363C", deskHi:"#35464D", deskEdge:"#182329",
   chair:"#131719", chairHi:"#242B2E", chairLo:"#0B0E0F", chairMesh:"#1B2225",
   monitor:"#0C0F11", monitorHi:"#1B2226", monitorLo:"#060809", monitorVent:"#232B30",
-  screen:"#8FD9C6", screenHi:"#B4E9DC", screenBar:"#2E5F94", screenGlow:"0.45", coolerJar:"#3E7A9A",
+  screen:"#8FD9C6", screenHi:"#B4E9DC", screenBar:"#2E5F94", screenGlow:"0.45", coolerJar:"#3E7A9A", duct:"#1D282E", ductHi:"#2A373E", ductVent:"#161F24", tray:"#1A242A", projector:"#2A363C", projectorLens:"#7FA8B4", clockFace:"#22313A", clockRim:"#3E5158", clockInk:"#D6E2E2",
   skin:["#8A6549","#7C573B","#96725A","#6B4A31"], hair:"#15100C",
   shirt:["#33445A","#5A3332","#2C4F3E","#4A4A52","#63502F","#3E465C"],
   mug:"#A9A396", chai:"#8A5822", shadow:"#000000",
@@ -639,7 +761,10 @@ var NIGHT = {
   docPaper:"#9C8464", docInk:"#584429", sheet:"#C6D0CB", sheetLine:"#8A9A92", sheetHead:"#245F3C", sheetSel:"#3E6E9E",
   keyboard:"#101010", keycap:"#212120", mousepad:"#14232A", mouse:"#1A1A18",
   lanyard:"#2E5A96", bagTeal:"#23708C", bagGrey:"#45454700", bagGrey:"#454547", bagShade:"#00000044",
-  bags:["#23708C","#5A3332","#2C4F3E","#4A4A52","#7A3A34"]
+  bags:["#23708C","#5A3332","#2C4F3E","#4A4A52","#7A3A34"],
+  bulbA:"#C2452F", bulbB:"#C08E20", bulbC:"#2F6E48", bulbD:"#2C5589", wire:"#3A4348",
+  clockFace:"#243138", clockRim:"#3D4E56", clockHand:"#CBD6D2",
+  shaft:"0.09", trouser:"#242B33", tiffin:"#77808A", cakeBox:"#9A8E7C", kettle:"#6E767C", colYellow:"#A17E20"
 };
 
 
@@ -683,8 +808,14 @@ function tick(){
   var k = Math.max(0, Math.min(1, (h - SHIFT.inn) / (SHIFT.out - SHIFT.inn)));
   $("#progfill").style.width = (k*100).toFixed(2)+"%";
 
-  if (inTea && !teaOn){ teaOn = true; teaRush(); }
+  if (inTea && !teaOn){ teaOn = true; teaRush(); trolleyRun(); }
   if (!inTea) teaOn = false;
+
+  var ch = document.getElementById("clkH"), cm = document.getElementById("clkM");
+  if (ch) ch.setAttribute("transform", "rotate("+((H%12)*30 + M*0.5)+")");
+  if (cm) cm.setAttribute("transform", "rotate("+(M*6)+")");
+
+  if (occNow() !== lastOcc) paint();
 
 }
 /* started below, once the scene exists */
@@ -695,9 +826,21 @@ function isDark(){
   var a = root.getAttribute("data-theme");
   return a ? a === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
+function occNow(){
+  var d = new Date(), h = d.getHours() + d.getMinutes()/60;
+  if (h < 13)    return 0.15;   // फ़्लोर अभी ख़ाली है
+  if (h < 14)    return 0.5;    // लोग आने लगे
+  if (h < 20.5)  return 1;      // पूरी शिफ़्ट
+  if (h < 21.5)  return 0.85;
+  if (h < 22.5)  return 0.55;   // एक-एक करके निकल रहे हैं
+  if (h < 23)    return 0.3;
+  return 0.15;
+}
+var lastOcc = null;
 function paint(){
   var keep = pano.scrollLeft;
-  $("#scene").innerHTML = buildScene(isDark() ? NIGHT : DAY);
+  lastOcc = occNow();
+  $("#scene").innerHTML = buildScene(isDark() ? NIGHT : DAY, lastOcc);
   pano.scrollLeft = keep;
   $("#theme").textContent = isDark() ? "दिन कर दो" : "रात कर दो";
 }
@@ -716,13 +859,42 @@ $("#theme").addEventListener("click", function(){
   paint();
 });
 
-/* wall fan */
-var ang = 0;
+/* पंखा, आता-जाता बंदा, और चाय की ट्रॉली */
+var ang = 0, wx = -200, wdir = 1, wwait = 0, bob = 0;
+var tx = null, tdir = 1;
+function trolleyRun(){ if (tx === null){ tdir = Math.random() > .5 ? 1 : -1; tx = tdir > 0 ? -220 : 3620; } }
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
   setInterval(function(){
     ang = (ang + 17) % 360;
     var b = document.querySelector(".fanblades");
     if (b) b.setAttribute("transform","rotate("+ang+")");
+
+    var w = document.getElementById("walker");
+    if (w){
+      if (wwait > 0){ wwait--; w.setAttribute("opacity","0"); }
+      else {
+        w.setAttribute("opacity","1");
+        bob += 0.42;
+        wx += wdir * 4.2;
+        w.setAttribute("transform","translate("+wx+","+(624 + Math.sin(bob)*1.6)+") scale("+(wdir>0?1:-1)+",1)");
+        if (wx > 3600 || wx < -260){
+          wdir = -wdir;
+          wx = wdir > 0 ? -220 : 3600;
+          wwait = 200 + Math.floor(Math.random()*600);
+        }
+      }
+    }
+
+    var tr = document.getElementById("trolley");
+    if (tr){
+      if (tx === null){ tr.setAttribute("opacity","0"); }
+      else {
+        tr.setAttribute("opacity","1");
+        tx += tdir * 3.4;
+        tr.setAttribute("transform","translate("+tx+",718)");
+        if (tx > 3620 || tx < -240) tx = null;
+      }
+    }
   }, 45);
 }
 
@@ -795,12 +967,25 @@ var JOSH = [
  "नज़र नतीजे पर, हाथ काम पर",
  "आसान कभी नहीं था — फिर भी हम यहीं हैं",
  "जो टीम साथ बैठती है, वो साथ जीतती है",
- "अपना काम इतना अच्छा करो कि गिनना पड़े"
+ "अपना काम इतना अच्छा करो कि गिनना पड़े",
+ "जो आज टाला, कल दुगुना भारी लगेगा",
+ "गिनती झूठ नहीं बोलती — बहाने बोलते हैं",
+ "जिस दिन मन न लगे, उस दिन सबसे ज़रूरी है आना",
+ "सीखने में शर्म नहीं, न सीखने में है",
+ "अपनी शिफ़्ट अपने हाथ में रखो",
+ "नौ घंटे तो देने ही हैं — अच्छे से दे दो",
+ "जो सवाल पूछ लिया, वो आधा हल हो गया",
+ "भीड़ में भी अपना काम पहचाना जाता है",
+ "आज एक चीज़ बेहतर — साल में तीन सौ बेहतर",
+ "थकान बुरी नहीं, बेमतलब की थकान बुरी है"
 ];
 function joshNow(h){
   if (h >= 14   && h < 14.5) return "नई शिफ़्ट, नया मौक़ा। शुरू करो।";
   if (h >= 16.5 && h < 17)   return "चाय क़रीब है। एक काम और निपटा लो।";
   if (h >= 17   && h < 17.5) return "चाय का टाइम। दस मिनट अपने लिए।";
+  if (h >= 15.5 && h < 16)   return "डेढ़ घंटा हो गया। रफ़्तार पकड़ लो।";
+  if (h >= 19   && h < 19.5) return "आधी शिफ़्त पार। सबसे भारी हिस्सा निकल गया।";
+  if (h >= 21   && h < 21.5) return "दो घंटे बचे हैं। अब ढीला मत छोड़ो।";
   if (h >= 22   && h < 23)   return "आख़िरी घंटा। यहीं से फ़र्क़ पड़ता है।";
   if (h >= 23)               return "शिफ़्ट पूरी। अच्छा काम किया।";
   return null;
@@ -1101,6 +1286,8 @@ document.querySelectorAll("[data-preset]").forEach(function(b){
     setMix(PRESETS[b.dataset.preset]);
   });
 });
+$("#callTrolley").addEventListener("click", function(){ trolleyRun(); });
+$("#moreJosh").addEventListener("click", function(){ joshI = (joshI + 1) % JOSH.length; joshShow(JOSH[joshI]); });
 $("#mute").addEventListener("click", function(){
   muted = !muted;
   if (master) master.gain.setTargetAtTime(muted ? 0 : .9, actx.currentTime, .1);
