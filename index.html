@@ -23,7 +23,7 @@
 :root{
   --ink:#241F17; --soft:#5F5749; --glass:rgba(248,246,240,.9); --edge:rgba(40,32,18,.16);
   --blue:#2C4E9B; --orange:#D9541F; --mustard:#D9A518; --bg:#DCD7CA;
-  --pop:#FFFFFF; --shadow:0 14px 40px rgba(40,32,14,.22); --joshglow:rgba(250,248,240,.95);
+  --pop:#FFFFFF; --shadow:0 14px 40px rgba(40,32,14,.22); --joshglow:rgba(250,248,240,.92); --joshInk:#221E16;
   --plate:#2C4E9B; --plateInk:#FFFFFF; --paper:#FBFAF3; --paperInk:#241F17; --tape:rgba(214,205,180,.75);
   --laminate:#F4F1E8; --laminateEdge:#BDB5A2;
 }
@@ -31,7 +31,7 @@
   :root:not([data-theme="light"]){
     --ink:#E7EEEA; --soft:#93A7A4; --glass:rgba(16,26,31,.86); --edge:rgba(160,200,200,.18);
     --blue:#5D89D6; --orange:#E67A3C; --mustard:#D9AD36; --bg:#0D1519;
-    --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6); --joshglow:rgba(6,12,15,.95);
+    --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6); --joshglow:rgba(8,14,18,.94); --joshInk:#F2EFE4;
     --plate:#22407E; --plateInk:#E9EFF8; --paper:#1B272D; --paperInk:#E7EEEA; --tape:rgba(120,140,140,.35);
     --laminate:#202E34; --laminateEdge:#0F181C;
   }
@@ -39,7 +39,7 @@
 :root[data-theme="dark"]{
   --ink:#E7EEEA; --soft:#93A7A4; --glass:rgba(16,26,31,.86); --edge:rgba(160,200,200,.18);
   --blue:#5D89D6; --orange:#E67A3C; --mustard:#D9AD36; --bg:#0D1519;
-  --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6); --joshglow:rgba(6,12,15,.95);
+  --pop:#16242A; --shadow:0 14px 40px rgba(0,0,0,.6); --joshglow:rgba(8,14,18,.94); --joshInk:#F2EFE4;
     --plate:#22407E; --plateInk:#E9EFF8; --paper:#1B272D; --paperInk:#E7EEEA; --tape:rgba(120,140,140,.35);
     --laminate:#202E34; --laminateEdge:#0F181C;
 }
@@ -97,19 +97,17 @@ button{font-family:'Hind',sans-serif}
 .jump .pill:hover{border-bottom-color:var(--orange)}
 
 .josh{position:absolute; top:5.9rem; left:50%; transform:translateX(-50%); z-index:9;
-  background:#FCFAF2; color:#221E16; text-align:center; max-width:min(660px,90vw);
-  padding:.8rem 2.2rem 1rem; border:1px solid rgba(0,0,0,.10); border-top:4px solid var(--mustard);
-  border-radius:2px; box-shadow:0 16px 38px rgba(26,18,4,.34), 0 2px 6px rgba(26,18,4,.2);
-  pointer-events:none; opacity:0; transition:opacity 1.2s ease}
-.josh .lbl{display:block; font-family:'Hind',sans-serif; font-size:.7rem; font-weight:600;
-  letter-spacing:.18em; color:#9A8D71; margin-bottom:.35rem}
-.josh .txt{display:block; font-family:'Rozha One',serif; line-height:1.3;
-  font-size:clamp(1.3rem,3.1vw,2.35rem)}
+  color:var(--joshInk); text-align:center; max-width:min(720px,92vw); padding:.4rem 1.4rem;
+  pointer-events:none; opacity:0; transition:opacity 1.2s ease; isolation:isolate}
+.josh::before{content:""; position:absolute; inset:-55% -10%; z-index:-1;
+  background:radial-gradient(58% 62% at 50% 50%, var(--joshglow) 0%, transparent 72%)}
+.josh .txt{display:block; font-family:'Rozha One',serif; line-height:1.28;
+  font-size:clamp(1.35rem,3.3vw,2.5rem);
+  text-shadow:0 0 14px var(--joshglow), 0 0 34px var(--joshglow), 0 1px 2px var(--joshglow)}
 .josh.on{opacity:1}
 @media (max-width:640px){
-  .josh{top:6.5rem; padding:.55rem 1rem .7rem; max-width:93vw}
+  .josh{top:6.5rem; padding:.6rem 1rem .7rem; max-width:93vw}
   .josh .txt{font-size:1.15rem}
-  .josh .lbl{font-size:.62rem; letter-spacing:.14em}
 }
 .hint{position:absolute; left:50%; bottom:8.5rem; transform:translateX(-50%); z-index:9;
   background:rgba(22,16,6,.7); color:#F6F2E8; padding:.28rem 1rem; border-radius:999px;
@@ -268,7 +266,7 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
   <button class="pill" data-x="0.95">रंगीन दीवार</button>
 </div>
 
-<div class="josh" id="josh"><span class="lbl">दीवार पे लिखा है</span><span class="txt" id="joshTxt"></span></div>
+<div class="josh" id="josh"><span class="txt" id="joshTxt"></span></div>
 <div class="hint" id="hint">खींच के पूरा फ़्लोर देखो</div>
 
 <div class="panel" id="p-mix">
@@ -397,10 +395,6 @@ function buildScene(P, occ, lite){
   }
   // the one tube on floor 2 that never stops flickering
   o.push('<rect id="flick" x="1284" y="20" width="132" height="32" rx="3" fill="'+P.light+'"/>');
-  // projector hanging over the far rows
-  o.push('<g transform="translate(2040 226)"><rect x="-4" y="-48" width="8" height="48" fill="'+P.steelLo+'"/>'+
-    '<rect x="-30" y="0" width="60" height="26" rx="4" fill="'+P.projector+'"/>'+
-    '<circle cx="22" cy="13" r="7" fill="'+P.projectorLens+'"/></g>');
   o.push('</g></g>');
 
   /* ================= back wall ================= */
@@ -423,11 +417,15 @@ function buildScene(P, occ, lite){
   R(1028,290,146,164,P.door);
   R(1028,290,10,164,P.doorHi,0,.5);
 
-  R(1196,286,236,152,P.orange,2);
-  R(1196,286,236,52,'url(#gSheen)',2);
+  // पोस्टर धुंधला नहीं होना चाहिए — इसे blur वाले group से बाहर रखा है
+  o.push('</g>');
+  R(1196,268,236,144,P.orange,2);
+  R(1196,268,236,50,'url(#gSheen)',2);
+    o.push('<rect x="1196" y="268" width="236" height="144" rx="2" fill="none" stroke="'+P.orangeEdge+'" stroke-width="2" opacity=".45"/>');
   var mot = ['THE PLACE','YOU BELONG TO','HAS A LOT','TO DO'];
   for (var m=0;m<mot.length;m++)
-    o.push('<text x="1314" y="'+(330+m*27)+'" text-anchor="middle" font-family="Hind, sans-serif" font-size="21" font-weight="600" letter-spacing="1" fill="'+P.orangeInk+'">'+mot[m]+'</text>');
+    o.push('<text x="1314" y="'+(305+m*27)+'" text-anchor="middle" font-family="Hind, sans-serif" font-size="23" font-weight="700" letter-spacing="1.1" fill="'+P.orangeInk+'">'+mot[m]+'</text>');
+  o.push('<g filter="url(#dof3)">');
 
   R(1478,292,204,118,P.tvFrame,5);
   R(1486,299,188,104,P.tv);
@@ -771,7 +769,7 @@ var DAY = {
   wall:"#E0DACD", wallHi:"#ECE7DB", wallLo:"#CBC4B4",
   glass:"#C9D4D5", glassTop:"#DCE4E4", glassFig:"#5E6E70", frame:"#AEB1AA", frameHi:"#E4E6E0",
   door:"#DAD4C6", doorHi:"#EFEBDF", doorFrame:"#B5AF9F", accentRed:"#BE3B2C",
-  orange:"#E8622A", orangeInk:"#FFF6EE", tv:"#1A1E21", tvFrame:"#2B3033",
+  orange:"#E8622A", orangeInk:"#FFFFFF", orangeEdge:"#B84518", tv:"#1A1E21", tvFrame:"#2B3033",
   board:"#EFEADB", boardFrame:"#B9B3A2", note1:"#F2D24B", note2:"#F09FBC", note3:"#96D2E4",
   st1:"#F3B6C6", st2:"#F6D66B", st3:"#93D4C5", st4:"#F2A55D", st5:"#C4D6F0", st6:"#F5E6B4",
   ac:"#F4F2EB", acHi:"#FFFFFF", acVent:"#CBC9C0", fan:"#DEDBD1", fanBack:"#CFCCC2", steelHi:"#F0EEE7", steelLo:"#9A968B",
@@ -802,7 +800,7 @@ var NIGHT = {
   wall:"#17222A", wallHi:"#1E2C34", wallLo:"#101A20",
   glass:"#1A2A31", glassTop:"#22343C", glassFig:"#4A6169", frame:"#263740", frameHi:"#354A54",
   door:"#18242A", doorHi:"#22323A", doorFrame:"#28383F", accentRed:"#8E3225",
-  orange:"#B5511F", orangeInk:"#FFE6D2", tv:"#090C0E", tvFrame:"#171C1F",
+  orange:"#B5511F", orangeInk:"#FFF4EA", orangeEdge:"#8A3A12", tv:"#090C0E", tvFrame:"#171C1F",
   board:"#1D2A31", boardFrame:"#26363E", note1:"#C6AB3C", note2:"#B2798F", note3:"#6B9EAE",
   st1:"#8A6572", st2:"#93803E", st3:"#4C7B72", st4:"#8B6036", st5:"#6A7890", st6:"#878062",
   ac:"#1F2E35", acHi:"#2C3F47", acVent:"#16222700", acVent:"#172228", fan:"#36484E", fanBack:"#1B272D", steelHi:"#8FA2A8", steelLo:"#4E6067",
