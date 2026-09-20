@@ -272,7 +272,7 @@ input[type=range]::-moz-range-thumb{width:15px; height:15px; border-radius:50%; 
 <div class="panel" id="p-mix">
   <button class="pill x" data-close>बंद</button>
   <h2>फ़्लोर की आवाज़</h2>
-  <p class="lede">गाने के पीछे वाला शोर। सब कुछ ब्राउज़र में ही बनता है।</p>
+  <p class="lede">गाने के पीछे वाला शोर।</p>
   <div id="mix"></div>
   <div class="presets">
     <button class="pill" data-preset="day">शुरुआत · २ बजे</button>
@@ -1179,7 +1179,7 @@ function ytLoad(){
           ytName();
         },
         onError: function(){
-          $("#nowsub").textContent = "ये गाना एम्बेड नहीं हो सकता — अगला चल रहा है";
+          $("#nowsub").textContent = "ये गाना यहाँ नहीं चल पाया — अगला लगा रहे हैं";
           try { yt.nextVideo(); } catch(e){}
         }
       }
@@ -1188,8 +1188,8 @@ function ytLoad(){
   var tag = document.createElement("script");
   tag.src = "https://www.youtube.com/iframe_api";
   tag.onerror = function(){
-    $("#nowtitle").textContent = "यूट्यूब नहीं खुल पाया";
-    $("#nowsub").textContent = "शायद नेटवर्क पर बंद है — अपने गाने लगा लो";
+    $("#nowtitle").textContent = "गाने नहीं खुल पाए";
+    $("#nowsub").textContent = "नीचे से अपने गाने लगा लो";
     $("#filePick").hidden = false;
   };
   document.head.appendChild(tag);
